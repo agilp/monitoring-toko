@@ -100,7 +100,7 @@ body.sales .mchips button.on{color:#1a1405}
 .kb{display:inline-flex;align-items:center;justify-content:center;background:var(--goldbg);color:#1d4ed8;font-weight:800;font-size:11px}
 .kbig{max-width:100%;width:auto;object-fit:contain;display:inline-block;vertical-align:middle}
 .kh .kbig{display:block}
-.dc .kh{min-height:66px;margin-bottom:0}
+.dc .kh{min-height:42px;margin-bottom:0}
 .tw.tx{overflow-x:hidden}
 .tb.tf{table-layout:fixed;font-size:11px}
 .tb.tf th,.tb.tf td{padding:5px 4px;white-space:normal;overflow-wrap:anywhere;word-break:break-all}
@@ -281,6 +281,53 @@ dt{color:var(--mute)}dd{margin:0;word-break:break-word;font-weight:600}
 .fk span{color:var(--mute)}.fk b{text-align:right;word-break:break-word}
 @media (max-width:520px){.fk{grid-template-columns:1fr}}
 .fmsg{font-size:12.5px;margin-top:8px;color:var(--mute);word-break:break-word}
+
+/* ===== percantik warna dashboard ===== */
+body:not(.sales){background:linear-gradient(180deg,#e6efff 0,#f1f6ff 260px,#f6f8fc 700px) fixed;--shadow:0 2px 14px rgba(29,78,216,.09);--line:#e2eaf8}
+body:not(.sales) .pn{border-radius:16px;padding:12px 14px;border:1px solid #e2eaf8;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff 0,#fbfdff 100%)}
+body:not(.sales) .pn::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#1d4ed8,#5aa2ff 45%,#34c3a0 75%,#ffd60a)}
+body:not(.sales) .pn h3{font-size:14px;color:#12326f;border-bottom-color:#e8eefb}
+body:not(.sales) .pn h3 em{color:#7a88a8}
+body:not(.sales) .box{border-radius:16px;box-shadow:0 8px 18px -8px rgba(18,50,111,.45);min-height:84px;transition:transform .15s,box-shadow .15s}
+body:not(.sales) .box:hover{transform:translateY(-2px);box-shadow:0 12px 22px -8px rgba(18,50,111,.5);filter:none}
+body:not(.sales) .box::after{background:radial-gradient(circle at 92% 12%,rgba(255,255,255,.32) 0 34px,transparent 35px),radial-gradient(circle at 78% 112%,rgba(255,255,255,.18) 0 48px,transparent 49px)}
+body:not(.sales) .box b{font-size:27px}
+body:not(.sales) .dc{border-radius:14px;border:1px solid #e2eaf8;background:linear-gradient(180deg,#fff,#f4f8ff);transition:transform .15s,box-shadow .15s,border-color .15s}
+body:not(.sales) .dc:hover{background:linear-gradient(180deg,#fff,#eaf2ff);border-color:#9fc0f5;transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(29,78,216,.35)}
+body:not(.sales) .tb th{background:linear-gradient(180deg,#eaf1ff,#dde8fb);color:#12326f}
+body:not(.sales) .tb tr[data-box]:hover td,body:not(.sales) .tb tr[data-fi]:hover td,body:not(.sales) .tb tr[data-oid]:hover td{background:#eef4ff}
+body:not(.sales) .chips button.on,body:not(.sales) .per button.on{background:linear-gradient(135deg,#12326f,#1d4ed8);border-color:#12326f;color:#fff}
+body:not(.sales) .oc.p{background:linear-gradient(90deg,rgba(196,50,31,.06),#fff 38%);border-radius:16px}
+body:not(.sales) .oc.p.ok{background:linear-gradient(90deg,rgba(31,122,92,.08),#fff 38%)}
+body:not(.sales) .oc.p.cx{background:linear-gradient(90deg,rgba(148,163,184,.14),#fff 38%)}
+body:not(.sales) .pf{background:rgba(255,255,255,.7);border-color:rgba(29,78,216,.22)}
+body:not(.sales) .hero{background:linear-gradient(135deg,#0f2f78 0%,#1d4ed8 55%,#3b8cf0 100%);border-radius:18px;box-shadow:0 10px 24px -10px rgba(29,78,216,.55)}
+body:not(.sales) .sec{color:#12326f}
+body:not(.sales) #q,body:not(.sales) .sels select{border-color:#d3e1fa;background:#fff}
+
+/* ===== tema warna dashboard ===== */
+body[data-th]:not(.sales){--on:#66708a;--hd1:#12326f;--thb:#e4ecfb;--a1:#1d4ed8;--a2:#5aa2ff;--a3:#ffd60a;--b1:#e6efff;--b2:#f1f6ff;--b3:#f6f8fc}
+body[data-th="samudra"]:not(.sales){--on:#dcecff;--hd1:#0b2a63;--thb:#dff0f6;--a1:#0e7490;--a2:#22b8cf;--a3:#ffd43b;--b1:#0b1f4a;--b2:#12498a;--b3:#0e8a8f}
+body[data-th="hutan"]:not(.sales){--on:#e6f6ec;--hd1:#0f4a38;--thb:#e0f3e8;--a1:#1f7a5c;--a2:#6fcf97;--a3:#f4c542;--b1:#0a3328;--b2:#14624a;--b3:#2f9a74}
+body[data-th="senja"]:not(.sales){--on:#ffeceb;--hd1:#4a1d55;--thb:#f3e4f3;--a1:#7a2f7e;--a2:#ff7a6b;--a3:#ffc36b;--b1:#2a1448;--b2:#7a2f7e;--b3:#e8695a}
+body[data-th]:not(.sales){background:linear-gradient(160deg,var(--b1) 0,var(--b2) 55%,var(--b3) 100%) fixed}
+body[data-th]:not(.sales) #info,body[data-th]:not(.sales) #sync,body[data-th]:not(.sales) .info{color:var(--on)}
+body[data-th]:not(.sales) .sec{color:var(--on)}
+body[data-th]:not(.sales) .sec::before{background:linear-gradient(180deg,var(--a3),var(--a2))}
+body[data-th]:not(.sales) .pn::before{background:linear-gradient(90deg,var(--a1),var(--a2) 55%,var(--a3))}
+body[data-th]:not(.sales) .pn h3{color:var(--hd1)}
+body[data-th]:not(.sales) .pn h3::before{background:linear-gradient(180deg,var(--a2),var(--a1))}
+body[data-th]:not(.sales) .tb th{background:var(--thb);color:var(--hd1)}
+body[data-th]:not(.sales) .chips button.on,body[data-th]:not(.sales) .per button.on{background:linear-gradient(135deg,var(--hd1),var(--a1));border-color:var(--hd1);color:#fff}
+body[data-th]:not(.sales) .hero{background:linear-gradient(135deg,var(--b1),var(--a1) 70%,var(--a2))}
+body[data-th]:not(.sales) .dc:hover{border-color:var(--a2)}
+body[data-th]:not(.sales) .per button:not(.on){background:rgba(255,255,255,.92);color:#18223b}
+#thm{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:0 0 6px;font-size:11.5px}
+#thm span{opacity:.85}
+body[data-th]:not(.sales) #thm span{color:var(--on)}
+#thm button{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);cursor:pointer;padding:0}
+#thm button.on{outline:2.5px solid #12326f;outline-offset:1px}
+body.sales #thm{display:none}
 </style>
 </head>
 <body>
@@ -476,19 +523,20 @@ function renderDash() {
   ORD.map(o => o.courier).filter(Boolean).concat(Object.keys(KLOGO)).forEach(n => { if (!cm.has(n)) cm.set(n, { a: 0, b: 0 }); });
   const cl = [...cm.entries()].sort((x, y) => (y[1].a + y[1].b) - (x[1].a + x[1].b) || String(x[0]).localeCompare(String(y[0]))), R = 38, C = 2 * Math.PI * R;
   const dcard = ([n, e]) => { const t = e.a + e.b, la = e.a / Math.max(1, t) * C, lb = e.b / Math.max(1, t) * C;
-    return `<div class="dc${t ? "" : " z"}" data-courier="${esc(n)}"><div class="kh">${KLOGO[n] ? ckurir(n, 64, "100%") : cbadge(n) + `<b class="t" title="${esc(n)}">${esc(n)}</b>`}</div><svg viewBox="0 0 100 100" role="img" aria-label="Donat ${esc(n)}"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--track)" stroke-width="16"/>` +
+    return `<div class="dc${t ? "" : " z"}" data-courier="${esc(n)}"><div class="kh">${KLOGO[n] ? ckurir(n, 38, "88px") : cbadge(n) + `<b class="t" title="${esc(n)}">${esc(n)}</b>`}</div><svg viewBox="0 0 100 100" role="img" aria-label="Donat ${esc(n)}"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--track)" stroke-width="16"/>` +
       (e.a ? `<circle cx="50" cy="50" r="${R}" fill="none" stroke="#1d6ae5" stroke-width="16" stroke-dasharray="${la.toFixed(2)} ${(C - la).toFixed(2)}" transform="rotate(-90 50 50)"/>` : "") +
       (e.b ? `<circle cx="50" cy="50" r="${R}" fill="none" stroke="#e3b341" stroke-width="16" stroke-dasharray="${lb.toFixed(2)} ${(C - lb).toFixed(2)}" stroke-dashoffset="${(-la).toFixed(2)}" transform="rotate(-90 50 50)"/>` : "") +
       `<text x="50" y="55" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">${t}</text></svg><small><i style="background:#1d6ae5"></i>${e.a}<i style="background:#e3b341"></i>${e.b}</small></div>`; };
   const pA = `<div class="pn" style="grid-column:span 12"><h3>Rincian Pengiriman per Kurir <em>${w1.length} menunggu pengiriman, ${w2.length} menunggu pengambilan</em></h3><div class="lg"><span><i style="background:#1d6ae5"></i>Menunggu pengiriman</span><span><i style="background:#e3b341"></i>Menunggu pengambilan</span></div>` +
     (cl.length ? `<div class="dcs">${cl.map(dcard).join("")}</div>` : '<div class="empty">Tidak ada pesanan yang menunggu.</div>') + `</div>`;
   const tab = (cols, rows, cls, wd) => `<div class="tw${cls ? " tx" : ""}"><table class="tb ${cls || ""}">${wd ? `<colgroup>${wd.map(w => `<col style="width:${w}">`).join("")}</colgroup>` : ""}<thead><tr>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${cols.length}">Tidak ada data.</td></tr>`}</tbody></table></div>`;
-  const wl = allw.slice().sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0)).slice(0, 60);
+  const srt = l => l.slice().sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0)).slice(0, 60);
   const cols = ["Produk", "Jumlah", "Order ID", "Tracking ID", "Kurir", "Status"], TW = ["24%", "8%", "22%", "17%", "13%", "16%"];
   const trow = o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id)}</td><td>${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td>${esc(o.sub)}</td></tr>`;
-  const pC = `<div class="pn s6"><h3>Pesanan Menunggu Pengiriman dan Pengambilan <em>ketuk baris untuk detail</em></h3>` + tab(cols, wl.map(trow), "tf", TW) + `</div>`;
+  const pC = `<div class="pn s6"><h3>Pesanan Menunggu Pengiriman <em>${fmt.format(w1.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(cols, srt(w1).map(trow), "tf", TW) + `</div>` +
+    `<div class="pn s6"><h3>Pesanan Menunggu Pengambilan <em>${fmt.format(w2.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(cols, srt(w2).map(trow), "tf", TW) + `</div>`;
   const tl = ORD.filter(o => BOX[2].f(o) || (BOX[3].f(o) && inP(o))).sort((x, y) => (y.created || 0) - (x.created || 0)).slice(0, 60);
-  const pE = `<div class="pn s6"><h3>Transit dan Terkirim <em>ketuk baris untuk detail</em></h3>` + tab(cols, tl.map(trow), "tf", TW) + `</div>`;
+  const pE = `<div class="pn" style="grid-column:span 12"><h3>Transit dan Terkirim <em>ketuk baris untuk detail</em></h3>` + tab(cols, tl.map(trow), "tf", TW) + `</div>`;
   $("dgrid").innerHTML = pA + pC + pE;
   const chs = [["TikTok Shop", /tiktok/i, logo("tt")], ["Tokopedia", /tokopedia/i, logo("tkp")]];
   $("logos").innerHTML = logo("tt") + logo("tkp");
@@ -898,7 +946,7 @@ async function decryptPkg(txt, pw) {
 let ENC = "", PW = "", GH = null, SYNC = false, DIRTY = new Set(), LAST = {}, FLUSHING = false, FTIMER = 0, POLLT = 0;
 const sig = m => JSON.stringify(Object.assign({}, m, { mt: 0 }));
 const hhmm = () => new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-const setSync = (m, bad) => { const el = $("sync"); if (!el) return; el.textContent = m; el.style.color = bad ? "var(--no)" : "var(--mute)"; };
+const setSync = (m, bad) => { const el = $("sync"); if (!el) return; el.textContent = m; el.style.color = bad ? "#ff6b57" : ""; };
 const ghU = (gh, path) => "https://api.github.com/repos/" + gh.repo + "/contents/" + path;
 async function ghGet(path, gh) {
   gh = gh || GH; const hd = { Authorization: "Bearer " + gh.tk, Accept: "application/vnd.github+json" };
@@ -1028,6 +1076,8 @@ $("pubdata").addEventListener("click", async () => {
   } catch (e) { pubMsg(String(e.message || e), true); }
 });
 
+
+document.body.setAttribute("data-th", "samudra");
 if (!ADMIN) { $("t6").classList.add("hide"); $("t7").classList.add("hide"); }
 load(); rebuild(); renderAll(); bootRemote();
 </script>
