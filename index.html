@@ -404,6 +404,9 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
 #pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
 .pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
 .gr .sd{width:66px}.stb{display:inline-block;min-width:52px;padding:3px 8px;border-radius:99px;font-size:11.5px;font-weight:800;color:var(--mute)}.stb.ok{background:var(--ok);color:#fff}.stb.no{background:var(--no);color:#fff}
+#od_tb table{min-width:1000px}#od_tb td{white-space:nowrap}#od_tb td.l{white-space:normal;min-width:200px}
+#od_tb input{width:100%;min-width:200px;font-size:13px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);box-sizing:border-box}
+#od_tb input.nf{border-color:var(--no)}.odn{font-size:11px;color:var(--no);font-weight:700}
 </style>
 </head>
 <body>
@@ -437,7 +440,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
   <div class="sec">Rincian Penjualan</div>
   <div class="dash" id="sgrp"></div>
  </div>
- <div id="v3" class="hide"><div class="sec">Orderan</div><div class="card empty-v">Menu Orderan belum diisi.</div></div>
+ <div id="v3" class="hide"><div class="sec">Orderan</div><div class="card"><div class="pft"><h3 style="margin:0">Daftar Orderan <em id="od_cnt" style="font-style:normal;font-size:12px;color:var(--mute);font-weight:600"></em></h3><div><button type="button" id="od_add" class="pbtn">+ Tambah baris</button> <button type="button" id="od_add5" class="pbtn gh">+ 5 baris</button></div></div><p class="pfn" style="margin:0 0 10px">Isi kolom ID Orderan (boleh 8 digit terakhir saja), kolom lainnya terisi otomatis dari data Excel. Baris tersimpan dan tersinkron ke tim.</p><div class="tw" style="max-height:none"><div id="od_tb"></div></div></div></div>
  <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card empty-v">Menu Stok Barang belum diisi.</div></div>
  <div id="v5" class="hide"><div class="sec">Pembelian</div>
  <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
@@ -953,7 +956,30 @@ if ($("pf_o")) {
     $("pfh").textContent = "Ubah Catatan Produk"; $("pf_save").textContent = "Simpan perubahan"; $("pf_cancel").classList.remove("hide"); window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
-function renderAll() { renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
+
+/* ===== Menu Orderan: tabel ID orderan manual, kolom lain otomatis (kunci ord_*) ===== */
+const odRows = () => Object.keys(MARK).filter(k => k.startsWith("ord_") && MARK[k].row).map(k => ({ k, id: MARK[k].row.id || "", ts: MARK[k].row.ts || 0 })).sort((a, b) => a.ts - b.ts);
+function odFind(v) { v = String(v || "").trim(); if (!v) return null; const ex = ORD.find(o => o.id === v); if (ex) return ex; if (v.length >= 6) { const m = ORD.filter(o => o.id.endsWith(v)); if (m.length === 1) return m[0]; } return null; }
+function renderOrderan() {
+  if (!$("od_tb")) return;
+  const rows = odRows(); $("od_cnt").textContent = rows.length ? rows.length + " baris" : "";
+  const ae = document.activeElement; if (ae && ae.closest && ae.closest("#od_tb") && ae.tagName === "INPUT") return;
+  const FM = new Map(); if (ADMIN && FIN && FIN.dr) FIN.dr.forEach(r => { const e = FM.get(r[0]) || { n: 0, set: 0, ref: false }; e.n++; e.set += num(r[5]); if (/pengembalian/i.test(r[1])) e.ref = true; FM.set(r[0], e); });
+  const finCell = o => { if (!ADMIN) return ""; if (!FIN) return '<td><span class="stb">Belum ada Excel keuangan</span></td>'; const e = FM.get(o.id); return e ? `<td><span class="stb ${e.ref ? "no" : "ok"}">${e.ref ? "Pengembalian dana" : "Sudah masuk laporan"}</span><div class="odn" style="color:var(--mute)">${rpn(e.set)}</div></td>` : '<td><span class="stb">Belum masuk laporan</span></td>'; };
+  const th = ["No", "ID Orderan", "Produk", "Jml", "Nilai", "Dibuat", "Kurir", "Tracking ID", "Status", "Opsi Pengiriman", "Stok"].concat(ADMIN ? ["Status Keuangan"] : []).concat([""]);
+  $("od_tb").innerHTML = `<table class="tb"><thead><tr>${th.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>` + (rows.length ? rows.map((r, i) => {
+    const o = odFind(r.id), st = o ? (MARK[o.id] || {}).st : "";
+    const cells = o ? `<td class="l"><div class="pfc">${pfThumb(pfName(o), 40)}<span>${esc(shortName(o.items[0].name))}${o.items.length > 1 ? ` <b>+${o.items.length - 1}</b>` : ""}</span></div></td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td><td>${esc(o.dopt || "-")}</td><td class="sd">${st === "ada" ? '<span class="stb ok">Ready</span>' : st === "habis" ? '<span class="stb no">Habis</span>' : '<span class="stb">-</span>'}</td>${finCell(o)}`
+      : `<td colspan="${ADMIN ? 10 : 9}" style="text-align:left;color:var(--mute)">${r.id ? '<span class="odn">ID tidak ditemukan di data Excel</span>' : "Isi ID Orderan di kolom sebelah kiri"}</td>`;
+    return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}"></td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="13" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
+}
+const odNew = n => { for (let i = 0; i < n; i++) MARK["ord_" + Date.now().toString(36) + i + Math.random().toString(36).slice(2, 5)] = { row: { id: "", ts: Date.now() + i } }; saveMarks(); renderOrderan(); };
+if ($("od_add")) {
+  $("od_add").addEventListener("click", () => odNew(1)); $("od_add5").addEventListener("click", () => odNew(5));
+  $("od_tb").addEventListener("change", e => { const k = e.target.dataset && e.target.dataset.od; if (!k || !MARK[k] || !MARK[k].row) return; MARK[k] = { row: { id: e.target.value.trim(), ts: MARK[k].row.ts } }; saveMarks(); e.target.blur(); renderOrderan(); });
+  $("od_tb").addEventListener("click", e => { const d = e.target.closest("[data-odd]"); if (d && confirm("Hapus baris ini?")) { MARK[d.dataset.odd] = { row: null, del: 1 }; saveMarks(); renderOrderan(); } });
+}
+function renderAll() { renderOrderan(); renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
 function show(n) {
   if (!ADMIN && (n === 6 || n === 7)) n = 1;
   for (let i = 1; i <= 7; i++) { $("v" + i).classList.toggle("hide", i !== n); $("t" + i).classList.toggle("on", i === n); }
