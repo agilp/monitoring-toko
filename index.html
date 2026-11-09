@@ -403,7 +403,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
 #pf_sum{font-size:12.5px;color:var(--mute);margin-bottom:8px}#pf_sum b{color:var(--ink)}
 #pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
 .pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
-.gr .sd{width:66px}.gr .sdb{display:block;width:60px;margin:2px auto;padding:3px 0;font-size:11px;border-width:1.5px}
+.gr .sd{width:66px}.stb{display:inline-block;min-width:52px;padding:3px 8px;border-radius:99px;font-size:11.5px;font-weight:800;color:var(--mute)}.stb.ok{background:var(--ok);color:#fff}.stb.no{background:var(--no);color:#fff}
 </style>
 </head>
 <body>
@@ -874,7 +874,7 @@ function renderGroups() {
   /* per produk */
   const pm = new Map(); base.forEach(o => o.items.forEach(it => { const e = pm.get(it.name) || { n: it.name, orders: [], qty: 0, sales: 0 }; e.orders.push([o, it.qty]); e.qty += it.qty; e.sales += it.sales || 0; pm.set(it.name, e); }));
   const pl = [...pm.values()].sort((a, b) => b.orders.length - a.orders.length || b.qty - a.qty);
-  const sdb = o => { const m = MARK[o.id] || {}; return `<td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td>`; };
+  const sdb = o => { const st = (MARK[o.id] || {}).st; return `<td class="sd">${st === "ada" ? '<span class="stb ok">Ready</span>' : st === "habis" ? '<span class="stb no">Habis</span>' : '<span class="stb">-</span>'}</td>`; };
   const pH = "<th>Order ID</th><th>Dibuat</th><th>Kurir</th><th>Jml</th><th>Status</th><th>Stok</th>";
   const pHtml = pl.slice(0, GLIM.p).map(e => block("p", e.n, `<div class="pf${IMG[e.n] ? "" : " e"}" style="width:40px;min-height:40px;border-radius:10px">${IMG[e.n] ? `<img src="${IMG[e.n]}" alt="">` : CAM}</div><div class="gn" title="${esc(e.n)}">${esc(shortName(e.n))}<small>${fmt.format(e.qty)} item, ${rp(e.sales)}</small></div><div class="gc">${fmt.format(e.orders.length)}<small> pesanan</small></div>`,
     e.orders.map(([o, q]) => `<tr data-oid="${esc(o.id)}"><td>${esc(o.id.slice(-8))}</td>${sh(o)}<td>${ckurir(o.courier, 22, "70px")}</td><td>${fmt.format(q)}</td><td>${esc(o.sub || o.status)}</td>${sdb(o)}</tr>`), pH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
