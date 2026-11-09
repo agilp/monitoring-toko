@@ -386,7 +386,9 @@ body.sales #thm{display:none}
 .pn h3.bn{font-size:15px;color:#12326f;background:linear-gradient(90deg,#e4eeff,#f4f8ff);border:0;border-left:5px solid #1d4ed8;border-radius:12px;padding:9px 12px;margin-bottom:10px}
 .pn h3.bn::before{display:none}.pn h3.bn em{font-size:11.5px;font-weight:700;color:#3b4d78}
 .sdb.ada.on{background:var(--ok);border-color:var(--ok);color:#fff}.sdb.hbs.on{background:var(--no);border-color:var(--no);color:#fff}
-td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;letter-spacing:-.2px}
+.tb.pk{min-width:590px}.tb.pk .sdb{padding:4px 6px;font-size:11px;margin:0 1px;border-width:1.5px}
+td.no{font-weight:700;color:var(--mute)}
+td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;font-size:9.5px;letter-spacing:-.3px;padding-left:2px!important;padding-right:2px!important}
 .prf h3{margin:0 0 12px}
 .pfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .pfg label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--mute)}
@@ -404,9 +406,12 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
 #pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
 .pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
 .gr .sd{width:66px}.stb{display:inline-block;min-width:52px;padding:3px 8px;border-radius:99px;font-size:11.5px;font-weight:800;color:var(--mute)}.stb.ok{background:var(--ok);color:#fff}.stb.no{background:var(--no);color:#fff}
-#od_tb table{min-width:1000px}#od_tb td{white-space:nowrap}#od_tb td.l{white-space:normal;min-width:200px}
+#od_tb table{min-width:1100px}#od_tb td{white-space:nowrap}#od_tb td.l{white-space:normal;min-width:320px;text-align:left}
 #od_tb input{width:100%;min-width:200px;font-size:13px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);box-sizing:border-box}
 #od_tb input.nf{border-color:var(--no)}.odn{font-size:11px;color:var(--no);font-weight:700}
+#sk_tb table{min-width:900px}#sk_tb td{white-space:nowrap}#sk_tb td.l{white-space:normal;min-width:260px;text-align:left}
+#pf_tb tfoot td,#sk_tb tfoot td{font-weight:800;background:#e8f1fb;border-top:2px solid var(--line)}
+.neg{color:var(--no);font-weight:800}.pos{color:var(--ok);font-weight:800}
 </style>
 </head>
 <body>
@@ -441,7 +446,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
   <div class="dash" id="sgrp"></div>
  </div>
  <div id="v3" class="hide"><div class="sec">Orderan</div><div class="card"><div class="pft"><h3 style="margin:0">Daftar Orderan <em id="od_cnt" style="font-style:normal;font-size:12px;color:var(--mute);font-weight:600"></em></h3><div><button type="button" id="od_add" class="pbtn">+ Tambah baris</button> <button type="button" id="od_add5" class="pbtn gh">+ 5 baris</button></div></div><p class="pfn" style="margin:0 0 10px">Isi kolom ID Orderan (boleh 8 digit terakhir saja), kolom lainnya terisi otomatis dari data Excel. Baris tersimpan dan tersinkron ke tim.</p><div class="tw" style="max-height:none"><div id="od_tb"></div></div></div></div>
- <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card empty-v">Menu Stok Barang belum diisi.</div></div>
+ <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card"><div class="pft"><h3 style="margin:0">Sisa Stok per Produk</h3></div><p class="pfn" style="margin:0 0 10px">Sisa stok = jumlah pembelian dikurangi jumlah orderan (tidak termasuk pesanan dibatalkan). Rata-rata beli = total nilai pembelian dibagi total jumlah beli. Rata-rata jual = total nilai penjualan dibagi jumlah terjual.</p><div class="tw" style="max-height:none"><div id="sk_tb"></div></div></div></div>
  <div id="v5" class="hide"><div class="sec">Pembelian</div>
  <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
   <div class="pfg">
@@ -632,8 +637,10 @@ function renderDash() {
       `<text x="50" y="55" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">${t}</text></svg><small><i style="background:#1d6ae5"></i>${e.a}<i style="background:#e3b341"></i>${e.b}</small></div>`; };
   const pA = `<div class="pn" style="grid-column:span 12"><h3>Rincian Pengiriman per Kurir <em>${w1.length} menunggu pengiriman, ${w2.length} menunggu pengambilan</em></h3><div class="lg"><span><i style="background:#1d6ae5"></i>Menunggu pengiriman</span><span><i style="background:#e3b341"></i>Menunggu pengambilan</span></div>` +
     (cl.length ? `<div class="dcs">${cl.map(dcard).join("")}</div>` : '<div class="empty">Tidak ada pesanan yang menunggu.</div>') + `</div>`;
-  const tab = (cols, rows, cls, wd) => `<div class="tw${cls ? " tx" : ""}"><table class="tb ${cls || ""}">${wd ? `<colgroup>${wd.map(w => `<col style="width:${w}">`).join("")}</colgroup>` : ""}<thead><tr>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${cols.length}">Tidak ada data.</td></tr>`}</tbody></table></div>`;
+  const numRows = rows => rows.map((r, i) => r.replace(/^(\s*<tr[^>]*>)/, `$1<td class="no">${i + 1}</td>`));
+  const tab = (cols, rows, cls, wd) => `<div class="tw${cls ? " tx" : ""}"><table class="tb ${cls || ""}">${wd ? `<colgroup><col style="width:5%">${wd.map(w => `<col style="width:${w}">`).join("")}</colgroup>` : ""}<thead><tr><th>No</th>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${numRows(rows).join("") || `<tr><td colspan="${cols.length + 1}">Tidak ada data.</td></tr>`}</tbody></table></div>`;
   const srt = l => l.slice().sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0)).slice(0, 60);
+  const srtN = l => srt(l).sort((x, y) => String(x.items[0].name || "").localeCompare(String(y.items[0].name || ""), "id", { sensitivity: "base", numeric: true }) || (x.paid || x.created || 0) - (y.paid || y.created || 0));
   const cols = ["Produk", "Jumlah", "Order ID", "Tracking ID", "Kurir", "Status"], TW = ["24%", "8%", "22%", "17%", "13%", "16%"];
   const trow = o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id)}</td><td>${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td>${esc(o.sub)}</td></tr>`;
   const nm2 = o => { const n = String(o.items[0].name || "").split(/\s+-\s+|,|\s\|\s/)[0].trim(); return esc(n.length > 80 ? n.slice(0, 80) + "…" : n) + (o.items.length > 1 ? ` <b>+${o.items.length - 1}</b>` : "") + (o.dopt ? `<br>${dbadge(o)}` : ""); };
@@ -641,11 +648,11 @@ function renderDash() {
   const cols1 = ["Produk", "Jml", "Order ID", "Penanda stok"], TW1 = ["46%", "7%", "19%", "28%"];
   const sdrow = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${nm2(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td style="word-break:normal;overflow-wrap:normal;font-size:11.5px">${esc(o.sub || o.status)}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td></tr>`; };
   const sdrow1 = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${nm2(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td></tr>`; };
-  const colsP = ["Produk", "Jml", "Order ID", "Tracking ID", "Kurir", "Stok"], TWP = ["19%", "6%", "21%", "19%", "9%", "26%"];
-  const prow = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td class="nw">${esc(o.id)}</td><td class="nw">${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Stok habis</button></td></tr>`; };
+  const colsP = ["Produk", "Jml", "Order ID", "Tracking ID", "Kurir", "Stok"], TWP = ["24%", "5%", "18%", "16%", "8%", "24%"];
+  const prow = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${nm2(o)}</td><td>${fmt.format(o.qty)}</td><td class="nw">${esc(o.id)}</td><td class="nw">${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td></tr>`; };
   const w1N = { ada: w1.filter(o => (MARK[o.id] || {}).st === "ada").length, habis: w1.filter(o => (MARK[o.id] || {}).st === "habis").length };
-  const pC = `<div class="pn s6"><h3 class="bn">&#128230; Pesanan Menunggu Pengiriman <em>${fmt.format(w1.length)} pesanan, Ready ${w1N.ada}, Habis ${w1N.habis}, belum ditandai ${w1.length - w1N.ada - w1N.habis}</em></h3>` + tab(cols1, srt(w1).map(sdrow1), "tf", TW1) + `</div>` +
-    `<div class="pn s6"><h3>Pesanan Menunggu Pengambilan <em>${fmt.format(w2.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(colsP, srt(w2).map(prow), "tf", TWP) + `</div>`;
+  const pC = `<div class="pn s6"><h3 class="bn">&#128230; Pesanan Menunggu Pengiriman <em>${fmt.format(w1.length)} pesanan, Ready ${w1N.ada}, Habis ${w1N.habis}, belum ditandai ${w1.length - w1N.ada - w1N.habis}</em></h3>` + tab(cols1, srtN(w1).map(sdrow1), "tf", TW1) + `</div>` +
+    `<div class="pn s6"><h3>Pesanan Menunggu Pengambilan <em>${fmt.format(w2.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(colsP, srtN(w2).map(prow), "tf pk", TWP) + `</div>`;
   const tl = ORD.filter(o => BOX[2].f(o) || (BOX[3].f(o) && inP(o))).sort((x, y) => (y.created || 0) - (x.created || 0)).slice(0, 60);
   const fastW = allw.filter(isFast).sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0));
   const om = new Map(); allw.forEach(o => { const n = o.dopt || "Tidak tercatat", e = om.get(n) || { a: 0, b: 0, f: isFast(o) }; BOX[0].f(o) ? e.a++ : e.b++; om.set(n, e); });
@@ -873,7 +880,7 @@ function renderGroups() {
   const sh = o => `<td>${esc(dstr(o.created))}</td>`;
   const block = (kind, key, head, rows, thead) => { const open = GOPEN.has(kind + "|" + key);
     return `<div class="gr${open ? " op" : ""}"><div class="gh" data-gt="${esc(kind + "|" + key)}">${head}<span class="ar">${open ? "&#9662;" : "&#9656;"}</span></div>` +
-      (open ? `<div class="tw" style="max-height:340px"><table class="tb"><thead><tr>${thead}</tr></thead><tbody>${rows.slice(0, 60).join("")}</tbody></table>${rows.length > 60 ? `<div class="cnt" style="padding:6px 8px">Menampilkan 60 dari ${fmt.format(rows.length)} pesanan, gunakan kolom cari di Daftar Pesanan untuk yang lain.</div>` : ""}</div>` : "") + `</div>`; };
+      (open ? `<div class="tw" style="max-height:340px"><table class="tb"><thead><tr><th>No</th>${thead}</tr></thead><tbody>${rows.slice(0, 60).map((r, i) => r.replace(/^(\s*<tr[^>]*>)/, `$1<td class="no">${i + 1}</td>`)).join("")}</tbody></table>${rows.length > 60 ? `<div class="cnt" style="padding:6px 8px">Menampilkan 60 dari ${fmt.format(rows.length)} pesanan, gunakan kolom cari di Daftar Pesanan untuk yang lain.</div>` : ""}</div>` : "") + `</div>`; };
   /* per produk */
   const pm = new Map(); base.forEach(o => o.items.forEach(it => { const e = pm.get(it.name) || { n: it.name, orders: [], qty: 0, sales: 0 }; e.orders.push([o, it.qty]); e.qty += it.qty; e.sales += it.sales || 0; pm.set(it.name, e); }));
   const pl = [...pm.values()].sort((a, b) => b.orders.length - a.orders.length || b.qty - a.qty);
@@ -926,7 +933,7 @@ function renderProduk() {
   const qty = rows.reduce((a, r) => a + (+r.q || 0), 0), val = rows.reduce((a, r) => a + (+r.n || 0), 0);
   $("pf_sum").innerHTML = `<b>${fmt.format(rows.length)}</b> catatan, jumlah <b>${fmt.format(qty)}</b>, nilai <b>${rp(val)}</b>`;
   $("pf_tb").innerHTML = rows.length ? `<table class="tb"><thead><tr><th>Produk</th><th>Tanggal</th><th>Bulan</th><th>Jumlah</th><th>Nilai</th><th>No. Pesanan</th><th>Akun</th><th>Toko</th><th>Status</th><th>Tanggal Diterima</th><th></th></tr></thead><tbody>` +
-    rows.map(r => `<tr><td class="l"><div class="pfc">${pfThumb(r.p, 46)}<span>${esc(r.p)}</span></div></td><td>${pfD(r.d)}</td><td>${esc(pfBulan(r.d) || "-")}</td><td>${fmt.format(+r.q || 0)}</td><td>${rp(+r.n || 0)}</td><td>${esc(r.o || "-")}</td><td>${esc(r.a || "-")}</td><td>${esc(r.t || "-")}</td><td>${esc(r.s || "-")}</td><td>${pfD(r.r)}</td><td><button type="button" class="pfx" data-pe="${esc(r.k)}">Ubah</button><button type="button" class="pfx d" data-pd="${esc(r.k)}">Hapus</button></td></tr>`).join("") + `</tbody></table>`
+    rows.map(r => `<tr><td class="l"><div class="pfc">${pfThumb(r.p, 46)}<span>${esc(r.p)}</span></div></td><td>${pfD(r.d)}</td><td>${esc(pfBulan(r.d) || "-")}</td><td>${fmt.format(+r.q || 0)}</td><td>${rp(+r.n || 0)}</td><td>${esc(r.o || "-")}</td><td>${esc(r.a || "-")}</td><td>${esc(r.t || "-")}</td><td>${esc(r.s || "-")}</td><td>${pfD(r.r)}</td><td><button type="button" class="pfx" data-pe="${esc(r.k)}">Ubah</button><button type="button" class="pfx d" data-pd="${esc(r.k)}">Hapus</button></td></tr>`).join("") + `</tbody><tfoot><tr><td class="l">TOTAL</td><td></td><td></td><td>${fmt.format(qty)}</td><td>${rp(val)}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tfoot></table>`
     : '<div class="empty">Belum ada catatan. Isi formulir di atas lalu tekan Simpan.</div>';
 }
 function pfClear() { PFEDIT = null; setTimeout(() => $("pf_im") && ($("pf_im").innerHTML = pfThumb("", 52)), 0); ["pf_p", "pf_d", "pf_b", "pf_q", "pf_n", "pf_o", "pf_r"].forEach(i => $(i).value = ""); $("pf_s").value = "Diproses"; $("pfh").textContent = "Tambah Catatan Produk"; $("pf_save").textContent = "Simpan"; $("pf_cancel").classList.add("hide"); }
@@ -966,12 +973,12 @@ function renderOrderan() {
   const ae = document.activeElement; if (ae && ae.closest && ae.closest("#od_tb") && ae.tagName === "INPUT") return;
   const FM = new Map(); if (ADMIN && FIN && FIN.dr) FIN.dr.forEach(r => { const e = FM.get(r[0]) || { n: 0, set: 0, ref: false }; e.n++; e.set += num(r[5]); if (/pengembalian/i.test(r[1])) e.ref = true; FM.set(r[0], e); });
   const finCell = o => { if (!ADMIN) return ""; if (!FIN) return '<td><span class="stb">Belum ada Excel keuangan</span></td>'; const e = FM.get(o.id); return e ? `<td><span class="stb ${e.ref ? "no" : "ok"}">${e.ref ? "Pengembalian dana" : "Sudah masuk laporan"}</span><div class="odn" style="color:var(--mute)">${rpn(e.set)}</div></td>` : '<td><span class="stb">Belum masuk laporan</span></td>'; };
-  const th = ["No", "ID Orderan", "Produk", "Jml", "Nilai", "Dibuat", "Kurir", "Tracking ID", "Status", "Opsi Pengiriman", "Stok"].concat(ADMIN ? ["Status Keuangan"] : []).concat([""]);
+  const th = ["No", "ID Orderan", "Produk", "Jml", "Nilai", "Dibuat", "Kurir", "Tracking ID", "Status"].concat(ADMIN ? ["Status Keuangan"] : []).concat([""]);
   $("od_tb").innerHTML = `<table class="tb"><thead><tr>${th.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>` + (rows.length ? rows.map((r, i) => {
     const o = odFind(r.id), st = o ? (MARK[o.id] || {}).st : "";
-    const cells = o ? `<td class="l"><div class="pfc">${pfThumb(pfName(o), 40)}<span>${esc(shortName(o.items[0].name))}${o.items.length > 1 ? ` <b>+${o.items.length - 1}</b>` : ""}</span></div></td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td><td>${esc(o.dopt || "-")}</td><td class="sd">${st === "ada" ? '<span class="stb ok">Ready</span>' : st === "habis" ? '<span class="stb no">Habis</span>' : '<span class="stb">-</span>'}</td>${finCell(o)}`
-      : `<td colspan="${ADMIN ? 10 : 9}" style="text-align:left;color:var(--mute)">${r.id ? '<span class="odn">ID tidak ditemukan di data Excel</span>' : "Isi ID Orderan di kolom sebelah kiri"}</td>`;
-    return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}"></td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="13" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
+    const cells = o ? `<td class="l"><div class="pfc">${pfThumb(pfName(o), 40)}<span>${esc(o.items[0].name)}${o.items.length > 1 ? ` <b>+${o.items.length - 1}</b>` : ""}</span></div></td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${finCell(o)}`
+      : `<td colspan="${ADMIN ? 8 : 7}" style="text-align:left;color:var(--mute)">${r.id ? '<span class="odn">ID tidak ditemukan di data Excel</span>' : "Isi ID Orderan di kolom sebelah kiri"}</td>`;
+    return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}"></td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="11" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
 }
 const odNew = n => { for (let i = 0; i < n; i++) MARK["ord_" + Date.now().toString(36) + i + Math.random().toString(36).slice(2, 5)] = { row: { id: "", ts: Date.now() + i } }; saveMarks(); renderOrderan(); };
 if ($("od_add")) {
@@ -979,7 +986,26 @@ if ($("od_add")) {
   $("od_tb").addEventListener("change", e => { const k = e.target.dataset && e.target.dataset.od; if (!k || !MARK[k] || !MARK[k].row) return; MARK[k] = { row: { id: e.target.value.trim(), ts: MARK[k].row.ts } }; saveMarks(); e.target.blur(); renderOrderan(); });
   $("od_tb").addEventListener("click", e => { const d = e.target.closest("[data-odd]"); if (d && confirm("Hapus baris ini?")) { MARK[d.dataset.odd] = { row: null, del: 1 }; saveMarks(); renderOrderan(); } });
 }
-function renderAll() { renderOrderan(); renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
+
+/* ===== Menu Stok Barang: pembelian dikurangi orderan ===== */
+const skKey = n => String(n || "").split(/\s+-\s+|,|\s\|\s/)[0].trim();
+function renderStok() {
+  const el = $("sk_tb"); if (!el) return;
+  const P = new Map();
+  pfRecs().forEach(r => { if (!r.p || r.s === "Dibatalkan") return; const e = P.get(r.p) || { p: r.p, bq: 0, bn: 0, oq: 0, os: 0 }; e.bq += +r.q || 0; e.bn += +r.n || 0; P.set(r.p, e); });
+  ORD.forEach(o => { if (o.status === "Dibatalkan") return; (o.items || []).forEach(it => { const e = P.get(skKey(it.name)); if (!e) return; e.oq += it.qty || 0; e.os += it.sales != null ? it.sales : (o.items.length === 1 ? (o.amount || 0) : 0); }); });
+  const L = [...P.values()].sort((a, b) => a.p.localeCompare(b.p, "id"));
+  if (!L.length) { el.innerHTML = '<div class="empty">Belum ada data pembelian. Isi dulu di menu Pembelian, lalu sisa stok muncul di sini.</div>'; return; }
+  const calc = e => { const beli = e.bq ? e.bn / e.bq : 0, jual = e.oq ? e.os / e.oq : 0, mu = e.oq && e.bq ? jual - beli : 0; return { sisa: e.bq - e.oq, beli, jual, mu, mp: jual ? mu / jual * 100 : 0, tm: mu * e.oq }; };
+  const sg = (n, f) => `<span class="${n < 0 ? "neg" : n > 0 ? "pos" : ""}">${f(n)}</span>`;
+  const row = (name, e, c, no) => `<tr><td>${no}</td><td class="l">${name}</td><td>${fmt.format(e.bq)}</td><td>${fmt.format(e.oq)}</td><td>${sg(c.sisa, v => fmt.format(v))}</td><td>${e.bq ? rp(c.beli) : "-"}</td><td>${e.oq ? rp(c.jual) : "-"}</td><td>${e.oq && e.bq ? sg(c.mu, rpn) : "-"}</td><td>${e.oq && e.bq ? sg(c.mp, v => v.toFixed(1).replace(".", ",") + "%") : "-"}</td><td>${e.oq && e.bq ? sg(c.tm, rpn) : "-"}</td></tr>`;
+  const T = { bq: 0, bn: 0, oq: 0, os: 0 }, tm = { v: 0 }; L.forEach(e => { T.bq += e.bq; T.bn += e.bn; T.oq += e.oq; T.os += e.os; if (e.oq && e.bq) tm.v += calc(e).tm; });
+  const ct = calc(T); ct.tm = tm.v; ct.mu = T.oq && T.bq ? ct.jual - ct.beli : 0; ct.mp = ct.jual ? ct.mu / ct.jual * 100 : 0;
+  el.innerHTML = `<table class="tb"><thead><tr><th>No</th><th>Produk</th><th>Pembelian</th><th>Orderan</th><th>Sisa Stok</th><th>Rata-rata Beli</th><th>Rata-rata Jual</th><th>Margin / Unit</th><th>Margin %</th><th>Total Margin</th></tr></thead><tbody>` +
+    L.map((e, i) => row(`<div class="pfc">${pfThumb(e.p, 40)}<span>${esc(e.p)}</span></div>`, e, calc(e), i + 1)).join("") +
+    `</tbody><tfoot><tr><td></td><td class="l">TOTAL</td><td>${fmt.format(T.bq)}</td><td>${fmt.format(T.oq)}</td><td>${sg(ct.sisa, v => fmt.format(v))}</td><td>${T.bq ? rp(ct.beli) : "-"}</td><td>${T.oq ? rp(ct.jual) : "-"}</td><td>${sg(ct.mu, rpn)}</td><td>${sg(ct.mp, v => v.toFixed(1).replace(".", ",") + "%")}</td><td>${sg(ct.tm, rpn)}</td></tr></tfoot></table>`;
+}
+function renderAll() { renderStok(); renderOrderan(); renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
 function show(n) {
   if (!ADMIN && (n === 6 || n === 7)) n = 1;
   for (let i = 1; i <= 7; i++) { $("v" + i).classList.toggle("hide", i !== n); $("t" + i).classList.toggle("on", i === n); }
