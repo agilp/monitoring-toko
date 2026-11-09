@@ -783,6 +783,7 @@ function renderKLogos() {
 }
 function renderAll() { renderDash(); renderList(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
 function show(n) {
+  if (!ADMIN && (n === 6 || n === 7)) n = 1;
   for (let i = 1; i <= 7; i++) { $("v" + i).classList.toggle("hide", i !== n); $("t" + i).classList.toggle("on", i === n); }
   document.body.classList.toggle("sales", n === 2);
   $("per").classList.toggle("hide", n > 2); renderAll(); window.scrollTo(0, 0);
