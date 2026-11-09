@@ -403,6 +403,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
 #pf_sum{font-size:12.5px;color:var(--mute);margin-bottom:8px}#pf_sum b{color:var(--ink)}
 #pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
 .pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
+.gr .sd{width:66px}.gr .sdb{display:block;width:60px;margin:2px auto;padding:3px 0;font-size:11px;border-width:1.5px}
 </style>
 </head>
 <body>
@@ -873,15 +874,16 @@ function renderGroups() {
   /* per produk */
   const pm = new Map(); base.forEach(o => o.items.forEach(it => { const e = pm.get(it.name) || { n: it.name, orders: [], qty: 0, sales: 0 }; e.orders.push([o, it.qty]); e.qty += it.qty; e.sales += it.sales || 0; pm.set(it.name, e); }));
   const pl = [...pm.values()].sort((a, b) => b.orders.length - a.orders.length || b.qty - a.qty);
-  const pH = "<th>Order ID</th><th>Dibuat</th><th>Kurir</th><th>Jml</th><th>Status</th>";
+  const sdb = o => { const m = MARK[o.id] || {}; return `<td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td>`; };
+  const pH = "<th>Order ID</th><th>Dibuat</th><th>Kurir</th><th>Jml</th><th>Status</th><th>Stok</th>";
   const pHtml = pl.slice(0, GLIM.p).map(e => block("p", e.n, `<div class="pf${IMG[e.n] ? "" : " e"}" style="width:40px;min-height:40px;border-radius:10px">${IMG[e.n] ? `<img src="${IMG[e.n]}" alt="">` : CAM}</div><div class="gn" title="${esc(e.n)}">${esc(shortName(e.n))}<small>${fmt.format(e.qty)} item, ${rp(e.sales)}</small></div><div class="gc">${fmt.format(e.orders.length)}<small> pesanan</small></div>`,
-    e.orders.map(([o, q]) => `<tr data-oid="${esc(o.id)}"><td>${esc(o.id.slice(-8))}</td>${sh(o)}<td>${ckurir(o.courier, 22, "70px")}</td><td>${fmt.format(q)}</td><td>${esc(o.sub || o.status)}</td></tr>`), pH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
+    e.orders.map(([o, q]) => `<tr data-oid="${esc(o.id)}"><td>${esc(o.id.slice(-8))}</td>${sh(o)}<td>${ckurir(o.courier, 22, "70px")}</td><td>${fmt.format(q)}</td><td>${esc(o.sub || o.status)}</td>${sdb(o)}</tr>`), pH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
   /* per kurir */
   const km = new Map(); base.forEach(o => { const n = o.courier || "Belum dipilih", e = km.get(n) || { n, orders: [], qty: 0, sales: 0 }; e.orders.push(o); e.qty += o.qty; e.sales += o.amount || 0; km.set(n, e); });
   const kl = [...km.values()].sort((a, b) => b.orders.length - a.orders.length);
-  const kH = "<th>Produk</th><th>Jml</th><th>Order ID</th><th>Tracking ID</th><th>Status</th>";
+  const kH = "<th>Produk</th><th>Jml</th><th>Order ID</th><th>Tracking ID</th><th>Status</th><th>Stok</th>";
   const kHtml = kl.slice(0, GLIM.k).map(e => block("k", e.n, `<div style="width:84px;flex:none;display:flex;justify-content:center">${KLOGO[e.n] ? ckurir(e.n, 30, "80px") : cbadge(e.n)}</div><div class="gn">${esc(e.n)}<small>${fmt.format(e.qty)} item, ${rp(e.sales)}</small></div><div class="gc">${fmt.format(e.orders.length)}<small> pesanan</small></div>`,
-    e.orders.map(o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td></tr>`), kH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
+    e.orders.map(o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${sdb(o)}</tr>`), kH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
   el.innerHTML = `<div class="pn" style="grid-column:span 12"><h3>Pengelompokan Pesanan <em>ketuk untuk membuka daftar pesanannya</em></h3><div class="chips" style="margin:0">${chips}</div></div>` +
     `<div class="pn s6"><h3>Daftar Pesanan per Produk <em>${fmt.format(pl.length)} produk</em></h3>${pHtml}${pl.length > GLIM.p ? `<button type="button" class="more" data-gmore="p">Tampilkan 12 produk lagi</button>` : ""}</div>` +
     `<div class="pn s6"><h3>Daftar Pesanan per Kurir <em>${fmt.format(kl.length)} kurir</em></h3>${kHtml}${kl.length > GLIM.k ? `<button type="button" class="more" data-gmore="k">Tampilkan 12 kurir lagi</button>` : ""}</div>`;
