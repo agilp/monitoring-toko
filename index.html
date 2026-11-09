@@ -387,6 +387,22 @@ body.sales #thm{display:none}
 .pn h3.bn::before{display:none}.pn h3.bn em{font-size:11.5px;font-weight:700;color:#3b4d78}
 .sdb.ada.on{background:var(--ok);border-color:var(--ok);color:#fff}.sdb.hbs.on{background:var(--no);border-color:var(--no);color:#fff}
 td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;letter-spacing:-.2px}
+.prf h3{margin:0 0 12px}
+.pfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.pfg label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--mute)}
+.pfg input{font-size:14px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+.pfg label:first-child{grid-column:span 2}
+.pfp{display:flex;gap:10px;align-items:center}.pfp select{flex:1;min-width:0}
+.pft2{flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,.7);border:1.5px solid rgba(29,78,216,.22);overflow:hidden;vertical-align:middle}.pft2 img{width:100%;height:100%;object-fit:cover;display:block}.pft2.e svg{width:55%;height:55%;opacity:.35}
+.pfc{display:flex;align-items:center;gap:10px;text-align:left}
+.pfb{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.pbtn{font-size:14px;font-weight:800;padding:10px 20px;border-radius:12px;border:0;background:linear-gradient(135deg,#1d4ed8,#0e7490);color:#fff;cursor:pointer}
+.pbtn.gh{background:#fff;color:var(--mute);border:1.5px solid var(--line)}
+#pf_msg{font-size:12.5px;color:var(--mute)}.pfn{margin:10px 0 0;font-size:12px;color:var(--mute)}
+.pft{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}.pft select{width:auto;max-width:100%;min-width:200px}
+#pf_sum{font-size:12.5px;color:var(--mute);margin-bottom:8px}#pf_sum b{color:var(--ink)}
+#pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
+.pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
 </style>
 </head>
 <body>
@@ -422,7 +438,25 @@ td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;
  </div>
  <div id="v3" class="hide"><div class="sec">Pembelian</div><div class="card empty-v">Menu Pembelian belum diisi.</div></div>
  <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card empty-v">Menu Stok Barang belum diisi.</div></div>
- <div id="v5" class="hide"><div class="sec">Produk</div><div class="card empty-v">Menu Produk belum diisi.</div></div>
+ <div id="v5" class="hide"><div class="sec">Produk</div>
+ <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
+  <div class="pfg">
+   <label>Produk<div class="pfp"><span id="pf_im"></span><select id="pf_p"></select></div></label>
+   <label>Tanggal<input type="date" id="pf_d"></label>
+   <label>Bulan<input type="text" id="pf_b" readonly placeholder="otomatis"></label>
+   <label>Jumlah<input type="number" id="pf_q" min="0" inputmode="numeric" placeholder="0"></label>
+   <label>Nilai (Rp)<input type="number" id="pf_n" min="0" inputmode="numeric" placeholder="0"></label>
+   <label>No. Pesanan<input type="text" id="pf_o" list="pf_ol" placeholder="ketik atau pilih" autocomplete="off"><datalist id="pf_ol"></datalist></label>
+   <label>Akun<input type="text" id="pf_a" list="pf_al" autocomplete="off"><datalist id="pf_al"></datalist></label>
+   <label>Toko<input type="text" id="pf_t" list="pf_tl" autocomplete="off"><datalist id="pf_tl"></datalist></label>
+   <label>Status<select id="pf_s"><option>Diproses</option><option>Dikirim</option><option>Diterima</option><option>Selesai</option><option>Dibatalkan</option></select></label>
+   <label>Tanggal Diterima<input type="date" id="pf_r"></label>
+  </div>
+  <div class="pfb"><button type="button" id="pf_save" class="pbtn">Simpan</button><button type="button" id="pf_cancel" class="pbtn gh hide">Batal ubah</button><span id="pf_msg"></span></div>
+  <p class="pfn">Isi No. Pesanan yang ada di data Excel, maka produk, tanggal, jumlah, nilai, status, dan tanggal diterima terisi otomatis. Catatan ikut tersinkron ke tim.</p>
+ </div>
+ <div class="card" style="margin-top:12px"><div class="pft"><h3 style="margin:0">Daftar Catatan Produk</h3><select id="pf_f"></select></div><div id="pf_sum"></div><div class="tw" style="max-height:none"><div id="pf_tb"></div></div></div>
+</div>
  <div id="v7" class="hide"><div class="sec">Keuangan</div><div id="fin"></div></div>
  <div id="v6" class="hide"><div class="sec">Input Data</div><div class="card"><p style="margin:0 0 12px;font-size:14px">Unggah file Excel pesanan hasil unduhan TikTok. Data lama tetap tersimpan, pesanan dengan Order ID yang sama diperbarui.</p>
   <button class="pill" id="reset" type="button">Reset data</button> <label class="pill w">Unggah Excel<input id="f" type="file" accept=".xlsx,.xls,.csv" multiple></label></div>
@@ -860,7 +894,64 @@ function renderKLogos() {
   const names = [...new Set(ORD.map(o => o.courier).filter(Boolean).concat(Object.keys(KLOGO)))].sort();
   $("klogos").innerHTML = names.map(n => `<div class="kr">${cbadge(n)}<b>${esc(n)}</b><label class="pill">Unggah<input type="file" accept="image/*" data-kl="${esc(n)}"></label>${KLOGO[n] ? `<button class="pill" type="button" data-kdel="${esc(n)}">Hapus</button>` : ""}</div>`).join("") || '<div class="empty">Belum ada data ekspedisi. Unggah Excel pesanan lebih dulu.</div>';
 }
-function renderAll() { renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
+
+/* ===== Menu Produk: catatan produk (tersinkron lewat MARK, kunci rec_*) ===== */
+const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+let PFEDIT = null, PFSEL = "";
+const pfRecs = () => Object.keys(MARK).filter(k => k.startsWith("rec_") && MARK[k].rec).map(k => Object.assign({ k }, MARK[k].rec));
+const pfBulan = d => { const m = /^(\d{4})-(\d{2})/.exec(d || ""); return m ? MONTHS[+m[2] - 1] + " " + m[1] : ""; };
+const pfD = d => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ""); return m ? (+m[3]) + " " + MONTHS[+m[2] - 1].slice(0, 3) + " " + m[1] : "-"; };
+const pfIso = t => t ? new Date(t).toISOString().slice(0, 10) : "";
+const pfName = o => String(o.items && o.items[0] ? o.items[0].name : (o.name || "")).split(/\s+-\s+|,|\s\|\s/)[0].trim();
+let PFIM = null, PFIMN = -1;
+function pfImg(p) { if (PFIM === null || PFIMN !== ORD.length + Object.keys(IMG).length) { PFIM = {}; PFIMN = ORD.length + Object.keys(IMG).length; ORD.forEach(o => (o.items || []).forEach(it => { const u = IMG[it.name], k = String(it.name || "").split(/\s+-\s+|,|\s\|\s/)[0].trim(); if (u && !PFIM[k]) PFIM[k] = u; })); } return PFIM[p] || ""; }
+const pfThumb = (p, w) => { const u = pfImg(p); return `<span class="pft2${u ? "" : " e"}" style="width:${w}px;height:${w}px">${u ? `<img src="${u}" alt="" loading="lazy">` : CAM}</span>`; };
+function pfProducts() { const set = new Set(); ORD.forEach(o => { const n = pfName(o); if (n) set.add(n); }); pfRecs().forEach(r => r.p && set.add(r.p)); return [...set].sort((a, b) => a.localeCompare(b, "id")); }
+function pfOpts(sel, list, first, cur) { sel.innerHTML = (first ? `<option value="">${first}</option>` : "") + list.map(x => `<option value="${esc(x)}"${x === cur ? " selected" : ""}>${esc(x)}</option>`).join(""); }
+function renderProduk() {
+  if (!$("pf_p")) return;
+  const recs = pfRecs(), prods = pfProducts();
+  const cur = $("pf_p").value; pfOpts($("pf_p"), prods, "Pilih produk", cur); if (!$("pf_im").innerHTML) $("pf_im").innerHTML = pfThumb(cur, 52);
+  const uniq = k => [...new Set(recs.map(r => r[k]).filter(Boolean))];
+  $("pf_al").innerHTML = uniq("a").map(x => `<option value="${esc(x)}">`).join(""); $("pf_tl").innerHTML = uniq("t").map(x => `<option value="${esc(x)}">`).join("");
+  if (!$("pf_ol").children.length) $("pf_ol").innerHTML = ORD.slice(0, 400).map(o => `<option value="${esc(o.id)}">`).join("");
+  if (PFSEL && !prods.includes(PFSEL)) PFSEL = "";
+  pfOpts($("pf_f"), prods.filter(p => recs.some(r => r.p === p)), "Semua produk", PFSEL);
+  const rows = recs.filter(r => !PFSEL || r.p === PFSEL).sort((a, b) => (b.d || "").localeCompare(a.d || "") || b.ts - a.ts);
+  const qty = rows.reduce((a, r) => a + (+r.q || 0), 0), val = rows.reduce((a, r) => a + (+r.n || 0), 0);
+  $("pf_sum").innerHTML = `<b>${fmt.format(rows.length)}</b> catatan, jumlah <b>${fmt.format(qty)}</b>, nilai <b>${rp(val)}</b>`;
+  $("pf_tb").innerHTML = rows.length ? `<table class="tb"><thead><tr><th>Produk</th><th>Tanggal</th><th>Bulan</th><th>Jumlah</th><th>Nilai</th><th>No. Pesanan</th><th>Akun</th><th>Toko</th><th>Status</th><th>Tanggal Diterima</th><th></th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td class="l"><div class="pfc">${pfThumb(r.p, 46)}<span>${esc(r.p)}</span></div></td><td>${pfD(r.d)}</td><td>${esc(pfBulan(r.d) || "-")}</td><td>${fmt.format(+r.q || 0)}</td><td>${rp(+r.n || 0)}</td><td>${esc(r.o || "-")}</td><td>${esc(r.a || "-")}</td><td>${esc(r.t || "-")}</td><td>${esc(r.s || "-")}</td><td>${pfD(r.r)}</td><td><button type="button" class="pfx" data-pe="${esc(r.k)}">Ubah</button><button type="button" class="pfx d" data-pd="${esc(r.k)}">Hapus</button></td></tr>`).join("") + `</tbody></table>`
+    : '<div class="empty">Belum ada catatan. Isi formulir di atas lalu tekan Simpan.</div>';
+}
+function pfClear() { PFEDIT = null; setTimeout(() => $("pf_im") && ($("pf_im").innerHTML = pfThumb("", 52)), 0); ["pf_p", "pf_d", "pf_b", "pf_q", "pf_n", "pf_o", "pf_r"].forEach(i => $(i).value = ""); $("pf_s").value = "Diproses"; $("pfh").textContent = "Tambah Catatan Produk"; $("pf_save").textContent = "Simpan"; $("pf_cancel").classList.add("hide"); }
+function pfFromOrder() {
+  const o = ORD.find(x => x.id === $("pf_o").value.trim()); if (!o) return false;
+  const n = pfName(o); if (![...$("pf_p").options].some(op => op.value === n)) { const op = document.createElement("option"); op.value = op.textContent = n; $("pf_p").appendChild(op); }
+  $("pf_p").value = n; $("pf_im").innerHTML = pfThumb(n, 52); $("pf_d").value = pfIso(o.created); $("pf_b").value = pfBulan($("pf_d").value); $("pf_q").value = o.qty || ""; $("pf_n").value = Math.round(o.amount || o.sales || 0) || "";
+  $("pf_s").value = o.status === "Dibatalkan" ? "Dibatalkan" : o.deliv ? "Diterima" : o.shipped ? "Dikirim" : "Diproses"; $("pf_r").value = pfIso(o.deliv); return true;
+}
+if ($("pf_o")) {
+  $("pf_p").addEventListener("change", () => { $("pf_im").innerHTML = pfThumb($("pf_p").value, 52); });
+  $("pf_d").addEventListener("change", () => { $("pf_b").value = pfBulan($("pf_d").value); });
+  $("pf_o").addEventListener("change", () => { if (pfFromOrder()) $("pf_msg").textContent = "Data diisi otomatis dari pesanan."; });
+  $("pf_f").addEventListener("change", e => { PFSEL = e.target.value; renderProduk(); });
+  $("pf_cancel").addEventListener("click", pfClear);
+  $("pf_save").addEventListener("click", () => {
+    if (!$("pf_p").value) { $("pf_msg").textContent = "Pilih produk dulu."; return; }
+    if (!$("pf_d").value) { $("pf_msg").textContent = "Isi tanggal dulu."; return; }
+    const k = PFEDIT || "rec_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    MARK[k] = { rec: { p: $("pf_p").value, d: $("pf_d").value, q: +$("pf_q").value || 0, n: +$("pf_n").value || 0, o: $("pf_o").value.trim(), a: $("pf_a").value.trim(), t: $("pf_t").value.trim(), s: $("pf_s").value, r: $("pf_r").value, ts: Date.now() } };
+    const keepA = $("pf_a").value, keepT = $("pf_t").value; saveMarks(); pfClear(); $("pf_a").value = keepA; $("pf_t").value = keepT; $("pf_msg").textContent = "Tersimpan."; renderProduk();
+  });
+  $("pf_tb").addEventListener("click", e => {
+    const d = e.target.closest("[data-pd]"); if (d) { if (confirm("Hapus catatan ini?")) { MARK[d.dataset.pd] = { rec: null, del: 1 }; saveMarks(); renderProduk(); } return; }
+    const x = e.target.closest("[data-pe]"); if (!x) return; const r = MARK[x.dataset.pe] && MARK[x.dataset.pe].rec; if (!r) return;
+    PFEDIT = x.dataset.pe; renderProduk(); $("pf_p").value = r.p; $("pf_im").innerHTML = pfThumb(r.p, 52); $("pf_d").value = r.d; $("pf_b").value = pfBulan(r.d); $("pf_q").value = r.q; $("pf_n").value = r.n; $("pf_o").value = r.o; $("pf_a").value = r.a; $("pf_t").value = r.t; $("pf_s").value = r.s; $("pf_r").value = r.r;
+    $("pfh").textContent = "Ubah Catatan Produk"; $("pf_save").textContent = "Simpan perubahan"; $("pf_cancel").classList.remove("hide"); window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+function renderAll() { renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
 function show(n) {
   if (!ADMIN && (n === 6 || n === 7)) n = 1;
   for (let i = 1; i <= 7; i++) { $("v" + i).classList.toggle("hide", i !== n); $("t" + i).classList.toggle("on", i === n); }
