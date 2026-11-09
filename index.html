@@ -378,7 +378,15 @@ body.sales #thm{display:none}
 .ot2>b{font-size:13px;color:#12326f;display:block;margin-bottom:5px}.ot2.f>b{color:#c2410c}
 .oc2{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mute)}
 .oc2 i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}.oc2 b{color:var(--ink);margin-left:3px}
-.sh2{font-size:12.5px;color:#12326f;margin:6px 0 6px;font-weight:800}
+.sh2{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;font-size:15px;color:#9a3412;margin:8px 0 8px;padding:9px 12px;font-weight:800;border-radius:12px;background:linear-gradient(90deg,#fff1e4,#fff8f1);border-left:5px solid #ff6b1a}
+.sh2.bl{color:#12326f;background:linear-gradient(90deg,#e4eeff,#f4f8ff);border-left-color:#1d4ed8}
+.sh2 span{margin-left:auto;font-size:12px;font-weight:700;color:#7c4a22}
+.tb td.sd{white-space:nowrap}
+.sdb{font-size:12px;font-weight:800;padding:5px 9px;border-radius:9px;border:2px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}
+.pn h3.bn{font-size:15px;color:#12326f;background:linear-gradient(90deg,#e4eeff,#f4f8ff);border:0;border-left:5px solid #1d4ed8;border-radius:12px;padding:9px 12px;margin-bottom:10px}
+.pn h3.bn::before{display:none}.pn h3.bn em{font-size:11.5px;font-weight:700;color:#3b4d78}
+.sdb.ada.on{background:var(--ok);border-color:var(--ok);color:#fff}.sdb.hbs.on{background:var(--no);border-color:var(--no);color:#fff}
+td.nw{white-space:nowrap!important;word-break:normal!important;font-size:10.5px;letter-spacing:-.2px}
 </style>
 </head>
 <body>
@@ -590,17 +598,22 @@ function renderDash() {
   const srt = l => l.slice().sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0)).slice(0, 60);
   const cols = ["Produk", "Jumlah", "Order ID", "Tracking ID", "Kurir", "Status"], TW = ["24%", "8%", "22%", "17%", "13%", "16%"];
   const trow = o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id)}</td><td>${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td>${esc(o.sub)}</td></tr>`;
-  const pC = `<div class="pn s6"><h3>Pesanan Menunggu Pengiriman <em>${fmt.format(w1.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(cols, srt(w1).map(trow), "tf", TW) + `</div>` +
-    `<div class="pn s6"><h3>Pesanan Menunggu Pengambilan <em>${fmt.format(w2.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(cols, srt(w2).map(trow), "tf", TW) + `</div>`;
+  const cols2 = ["Produk", "Jumlah", "Order ID", "Status", "Penanda stok"], TW2 = ["26%", "8%", "17%", "22%", "27%"];
+  const sdrow = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td style="word-break:normal;overflow-wrap:normal;font-size:11.5px">${esc(o.sub || o.status)}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Habis</button></td></tr>`; };
+  const colsP = ["Produk", "Jml", "Order ID", "Tracking ID", "Kurir", "Stok"], TWP = ["19%", "6%", "21%", "19%", "9%", "26%"];
+  const prow = o => { const m = MARK[o.id] || {}; return `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td class="nw">${esc(o.id)}</td><td class="nw">${esc(o.track || "-")}</td><td>${ckurir(o.courier, 26, "100%")}</td><td class="sd"><button type="button" class="sdb ada${m.st === "ada" ? " on" : ""}" data-sd="ada" data-id="${esc(o.id)}">Ready</button><button type="button" class="sdb hbs${m.st === "habis" ? " on" : ""}" data-sd="habis" data-id="${esc(o.id)}">Stok habis</button></td></tr>`; };
+  const w1N = { ada: w1.filter(o => (MARK[o.id] || {}).st === "ada").length, habis: w1.filter(o => (MARK[o.id] || {}).st === "habis").length };
+  const pC = `<div class="pn s6"><h3 class="bn">&#128230; Pesanan Menunggu Pengiriman <em>${fmt.format(w1.length)} pesanan, Ready ${w1N.ada}, Habis ${w1N.habis}, belum ditandai ${w1.length - w1N.ada - w1N.habis}</em></h3>` + tab(cols2, srt(w1).map(sdrow), "tf", TW2) + `</div>` +
+    `<div class="pn s6"><h3>Pesanan Menunggu Pengambilan <em>${fmt.format(w2.length)} pesanan, ketuk baris untuk detail</em></h3>` + tab(colsP, srt(w2).map(prow), "tf", TWP) + `</div>`;
   const tl = ORD.filter(o => BOX[2].f(o) || (BOX[3].f(o) && inP(o))).sort((x, y) => (y.created || 0) - (x.created || 0)).slice(0, 60);
   const fastW = allw.filter(isFast).sort((x, y) => (x.paid || x.created || 0) - (y.paid || y.created || 0));
   const om = new Map(); allw.forEach(o => { const n = o.dopt || "Tidak tercatat", e = om.get(n) || { a: 0, b: 0, f: isFast(o) }; BOX[0].f(o) ? e.a++ : e.b++; om.set(n, e); });
   const ol = [...om.entries()].sort((x, y) => (y[1].f - x[1].f) || (y[1].a + y[1].b) - (x[1].a + x[1].b));
   const otile = ([n, e]) => `<div class="ot2${e.f ? " f" : ""}"><b>${e.f ? "&#9889; " : ""}${esc(n)}</b><div class="oc2"><span><i style="background:#1d6ae5"></i>Menunggu kirim <b>${e.a}</b></span><span><i style="background:#e3b341"></i>Menunggu diambil <b>${e.b}</b></span></div></div>`;
-  const cols2 = ["Produk", "Jumlah", "Order ID", "Tracking ID", "Kurir", "Status"], TW2 = ["25%", "8%", "20%", "17%", "14%", "16%"];
+  const sdN = { ada: fastW.filter(o => (MARK[o.id] || {}).st === "ada").length, habis: fastW.filter(o => (MARK[o.id] || {}).st === "habis").length };
   const pS = `<div class="pn" style="grid-column:span 12"><h3>Info Pengiriman Same Day dan Instan <em>${fastW.length} prioritas menunggu, ${fmt.format(ORD.filter(inP).filter(isFast).length)} same day/instan pada periode</em></h3>` +
     (ol.length ? `<div class="ots">${ol.map(otile).join("")}</div>` : '<div class="empty">Tidak ada pesanan yang menunggu.</div>') +
-    `<h4 class="sh2">Pesanan Same Day dan Instan yang belum selesai dikirim</h4>` + (fastW.length ? tab(cols2, fastW.slice(0, 60).map(trow), "tf", TW2) : '<div class="empty">Tidak ada pesanan same day atau instan yang menunggu, semuanya sudah ditangani.</div>') + `</div>`;
+    `<h4 class="sh2">&#9889; Pesanan Same Day dan Instan yang Belum Selesai Dikirim <span>Ready ${sdN.ada}, Habis ${sdN.habis}, belum ditandai ${fastW.length - sdN.ada - sdN.habis}</span></h4>` + (fastW.length ? tab(cols2, fastW.slice(0, 60).map(sdrow), "tf", TW2) : '<div class="empty">Tidak ada pesanan same day atau instan yang menunggu, semuanya sudah ditangani.</div>') + `</div>`;
   const pE = `<div class="pn" style="grid-column:span 12"><h3>Transit dan Terkirim <em>ketuk baris untuk detail</em></h3>` + tab(cols, tl.map(trow), "tf", TW) + `</div>`;
   $("dgrid").innerHTML = pA + pS + pC + pE;
   { const mu = IMG.__kurir, el = $("mascot");
@@ -855,6 +868,7 @@ for (let i = 1; i <= 7; i++) $("t" + i).onclick = () => show(i);
 $("per").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) { PERIOD = b.dataset.p; LIMIT = 40; renderAll(); } });
 $("trend").addEventListener("click", e => { const b = e.target.closest("[data-mo]"); if (b) { MONTH = b.dataset.mo; renderDash(); } });
 $("v1").addEventListener("click", e => {
+  const sd = e.target.closest("[data-sd]"); if (sd) { const m = MARK[sd.dataset.id] = MARK[sd.dataset.id] || {}; m.st = m.st === sd.dataset.sd ? "" : sd.dataset.sd; m.kt = Date.now(); saveMarks(); renderAll(); return; }
   const o = e.target.closest("[data-oid]"); if (o) { openOrder(o.dataset.oid); return; }
   const c = e.target.closest("[data-courier]"); if (c) { openSheet("bw", { courier: c.dataset.courier === "Belum ditentukan" ? "Tidak diketahui" : c.dataset.courier }); return; }
   const b = e.target.closest("[data-box]"); if (b) openSheet(b.dataset.box); });
