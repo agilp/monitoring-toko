@@ -446,7 +446,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:nor
   <div class="dash" id="sgrp"></div>
  </div>
  <div id="v3" class="hide"><div class="sec">Orderan</div><div class="card"><div class="pft"><h3 style="margin:0">Daftar Orderan <em id="od_cnt" style="font-style:normal;font-size:12px;color:var(--mute);font-weight:600"></em></h3><div><button type="button" id="od_add" class="pbtn">+ Tambah baris</button> <button type="button" id="od_add5" class="pbtn gh">+ 5 baris</button></div></div><p class="pfn" style="margin:0 0 10px">Isi kolom ID Orderan (boleh 8 digit terakhir saja), kolom lainnya terisi otomatis dari data Excel. Baris tersimpan dan tersinkron ke tim.</p><div class="tw" style="max-height:none"><div id="od_tb"></div></div></div></div>
- <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card"><div class="pft"><h3 style="margin:0">Sisa Stok per Produk</h3></div><p class="pfn" style="margin:0 0 10px">Sisa stok = jumlah pembelian dikurangi jumlah orderan (tidak termasuk pesanan dibatalkan). Rata-rata beli = total nilai pembelian dibagi total jumlah beli. Rata-rata jual = total nilai penjualan dibagi jumlah terjual.</p><div class="tw" style="max-height:none"><div id="sk_tb"></div></div></div></div>
+ <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card"><div class="pft"><h3 style="margin:0">Sisa Stok per Produk</h3></div><p class="pfn" style="margin:0 0 10px">Sisa stok = jumlah pembelian dikurangi jumlah orderan yang diisi di menu Orderan (pesanan dibatalkan tidak dihitung). Rata-rata beli = total nilai pembelian dibagi total jumlah beli. Rata-rata jual = total nilai penjualan orderan itu dibagi jumlah terjual.</p><div class="tw" style="max-height:none"><div id="sk_tb"></div></div></div></div>
  <div id="v5" class="hide"><div class="sec">Pembelian</div>
  <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
   <div class="pfg">
@@ -976,7 +976,7 @@ function renderOrderan() {
   const th = ["No", "ID Orderan", "Produk", "Jml", "Nilai", "Dibuat", "Kurir", "Tracking ID", "Status"].concat(ADMIN ? ["Status Keuangan"] : []).concat([""]);
   $("od_tb").innerHTML = `<table class="tb"><thead><tr>${th.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>` + (rows.length ? rows.map((r, i) => {
     const o = odFind(r.id), st = o ? (MARK[o.id] || {}).st : "";
-    const cells = o ? `<td class="l"><div class="pfc">${pfThumb(pfName(o), 40)}<span>${esc(o.items[0].name)}${o.items.length > 1 ? ` <b>+${o.items.length - 1}</b>` : ""}</span></div></td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${finCell(o)}`
+    const cells = o ? `<td class="l">${o.items.map(it => `<div class="pfc" style="margin:2px 0">${pfThumb(skKey(it.name), 40)}<span>${esc(it.name)}${o.items.length > 1 ? ` <b>x${fmt.format(it.qty || 0)}</b>` : ""}</span></div>`).join("")}</td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${finCell(o)}`
       : `<td colspan="${ADMIN ? 8 : 7}" style="text-align:left;color:var(--mute)">${r.id ? '<span class="odn">ID tidak ditemukan di data Excel</span>' : "Isi ID Orderan di kolom sebelah kiri"}</td>`;
     return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}"></td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="11" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
 }
@@ -993,7 +993,8 @@ function renderStok() {
   const el = $("sk_tb"); if (!el) return;
   const P = new Map();
   pfRecs().forEach(r => { if (!r.p || r.s === "Dibatalkan") return; const e = P.get(r.p) || { p: r.p, bq: 0, bn: 0, oq: 0, os: 0 }; e.bq += +r.q || 0; e.bn += +r.n || 0; P.set(r.p, e); });
-  ORD.forEach(o => { if (o.status === "Dibatalkan") return; (o.items || []).forEach(it => { const e = P.get(skKey(it.name)); if (!e) return; e.oq += it.qty || 0; e.os += it.sales != null ? it.sales : (o.items.length === 1 ? (o.amount || 0) : 0); }); });
+  const seen = new Set(), OM = []; odRows().forEach(r => { const o = odFind(r.id); if (o && !seen.has(o.id)) { seen.add(o.id); OM.push(o); } });
+  OM.forEach(o => { if (o.status === "Dibatalkan") return; (o.items || []).forEach(it => { const e = P.get(skKey(it.name)); if (!e) return; e.oq += it.qty || 0; e.os += it.sales != null ? it.sales : (o.items.length === 1 ? (o.amount || 0) : 0); }); });
   const L = [...P.values()].sort((a, b) => a.p.localeCompare(b.p, "id"));
   if (!L.length) { el.innerHTML = '<div class="empty">Belum ada data pembelian. Isi dulu di menu Pembelian, lalu sisa stok muncul di sini.</div>'; return; }
   const calc = e => { const beli = e.bq ? e.bn / e.bq : 0, jual = e.oq ? e.os / e.oq : 0, mu = e.oq && e.bq ? jual - beli : 0; return { sisa: e.bq - e.oq, beli, jual, mu, mp: jual ? mu / jual * 100 : 0, tm: mu * e.oq }; };
