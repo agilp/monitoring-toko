@@ -405,6 +405,8 @@ td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:nor
 #pf_sum{font-size:12.5px;color:var(--mute);margin-bottom:8px}#pf_sum b{color:var(--ink)}
 #pf_tb table{min-width:900px}#pf_tb td.l{min-width:180px}#pf_tb td{white-space:nowrap}#pf_tb td.l{white-space:normal}
 .pfx{font-size:11.5px;font-weight:800;padding:4px 8px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--mute);cursor:pointer;margin:0 2px}.pfx.d{color:var(--no)}
+.gr .tb th,.gr .tb td{font-size:11px;padding:6px 4px}.gr .tb td{white-space:normal}.gr td.nw2,.gr td.no{white-space:nowrap}.gr td.ket{min-width:110px}.gr td.ket input{width:100%;min-width:100px;box-sizing:border-box;font-size:11px;padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.gr td.nw2{font-weight:700}
 .gr .sd{width:66px}.stb{display:inline-block;min-width:52px;padding:3px 8px;border-radius:99px;font-size:11.5px;font-weight:800;color:var(--mute)}.stb.ok{background:var(--ok);color:#fff}.stb.no{background:var(--no);color:#fff}
 #od_tb table{min-width:1100px}#od_tb td{white-space:nowrap}#od_tb td.l{white-space:normal;min-width:320px;text-align:left}
 #od_tb input{width:100%;min-width:200px;font-size:13px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);box-sizing:border-box}
@@ -446,7 +448,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:nor
   <div class="dash" id="sgrp"></div>
  </div>
  <div id="v3" class="hide"><div class="sec">Orderan</div><div class="card"><div class="pft"><h3 style="margin:0">Daftar Orderan <em id="od_cnt" style="font-style:normal;font-size:12px;color:var(--mute);font-weight:600"></em></h3><div><button type="button" id="od_add" class="pbtn">+ Tambah baris</button> <button type="button" id="od_add5" class="pbtn gh">+ 5 baris</button></div></div><p class="pfn" style="margin:0 0 10px">Isi kolom ID Orderan (boleh 8 digit terakhir saja), kolom lainnya terisi otomatis dari data Excel. Baris tersimpan dan tersinkron ke tim.</p><div class="tw" style="max-height:none"><div id="od_tb"></div></div></div></div>
- <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card"><div class="pft"><h3 style="margin:0">Sisa Stok per Produk</h3></div><p class="pfn" style="margin:0 0 10px">Sisa stok = jumlah pembelian dikurangi jumlah orderan yang diisi di menu Orderan (pesanan dibatalkan tidak dihitung). Rata-rata beli = total nilai pembelian dibagi total jumlah beli. Rata-rata jual = total nilai penjualan orderan itu dibagi jumlah terjual.</p><div class="tw" style="max-height:none"><div id="sk_tb"></div></div></div></div>
+ <div id="v4" class="hide"><div class="sec">Stok Barang</div><div class="card"><div class="pft"><h3 style="margin:0">Sisa Stok per Produk</h3></div><p class="pfn" style="margin:0 0 10px">Sisa stok = jumlah pembelian dikurangi jumlah orderan yang diisi di menu Orderan (pesanan dibatalkan tidak dihitung). Rata-rata beli = total nilai pembelian dibagi total jumlah beli. Rata-rata jual = pendapatan akhir (jumlah penyelesaian pembayaran dari Excel keuangan, sesuai ID orderan) dibagi jumlah barang yang sudah masuk laporan keuangan. Margin dihitung dari pesanan yang sudah masuk laporan keuangan; kolom ini terisi hanya untuk admin.</p><div class="tw" style="max-height:none"><div id="sk_tb"></div></div></div></div>
  <div id="v5" class="hide"><div class="sec">Pembelian</div>
  <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
   <div class="pfg">
@@ -872,6 +874,7 @@ function renderList() {
 }
 let GF = "unsent", GOPEN = new Set(), GLIM = { p: 12, k: 12 };
 function renderGroups() {
+  { const ae = document.activeElement; if (ae && ae.matches && ae.matches("[data-ket]")) return; }
   const el = $("grp"); if (!el) return;
   const inb = ORD.filter(inP), cnt = { unsent: 0, sent: 0, cancel: 0 }; inb.forEach(o => cnt[sstate(o)]++);
   const base = inb.filter(o => GF === "all" || sstate(o) === GF).sort((a, b) => (b.created || 0) - (a.created || 0));
@@ -884,16 +887,16 @@ function renderGroups() {
   /* per produk */
   const pm = new Map(); base.forEach(o => o.items.forEach(it => { const e = pm.get(it.name) || { n: it.name, orders: [], qty: 0, sales: 0 }; e.orders.push([o, it.qty]); e.qty += it.qty; e.sales += it.sales || 0; pm.set(it.name, e); }));
   const pl = [...pm.values()].sort((a, b) => b.orders.length - a.orders.length || b.qty - a.qty);
-  const sdb = o => { const st = (MARK[o.id] || {}).st; return `<td class="sd">${st === "ada" ? '<span class="stb ok">Ready</span>' : st === "habis" ? '<span class="stb no">Habis</span>' : '<span class="stb">-</span>'}</td>`; };
-  const pH = "<th>Order ID</th><th>Dibuat</th><th>Kurir</th><th>Jml</th><th>Status</th><th>Stok</th>";
+  const sdb = o => `<td class="nw2">${rp(o.amount || 0)}</td>`;
+  const pH = "<th>Order ID</th><th>Dibuat</th><th>Kurir</th><th>Jml</th><th>Status</th><th>Pembayaran</th>";
   const pHtml = pl.slice(0, GLIM.p).map(e => block("p", e.n, `<div class="pf${IMG[e.n] ? "" : " e"}" style="width:40px;min-height:40px;border-radius:10px">${IMG[e.n] ? `<img src="${IMG[e.n]}" alt="">` : CAM}</div><div class="gn" title="${esc(e.n)}">${esc(shortName(e.n))}<small>${fmt.format(e.qty)} item, ${rp(e.sales)}</small></div><div class="gc">${fmt.format(e.orders.length)}<small> pesanan</small></div>`,
     e.orders.map(([o, q]) => `<tr data-oid="${esc(o.id)}"><td>${esc(o.id.slice(-8))}</td>${sh(o)}<td>${ckurir(o.courier, 22, "70px")}</td><td>${fmt.format(q)}</td><td>${esc(o.sub || o.status)}</td>${sdb(o)}</tr>`), pH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
   /* per kurir */
   const km = new Map(); base.forEach(o => { const n = o.courier || "Belum dipilih", e = km.get(n) || { n, orders: [], qty: 0, sales: 0 }; e.orders.push(o); e.qty += o.qty; e.sales += o.amount || 0; km.set(n, e); });
   const kl = [...km.values()].sort((a, b) => b.orders.length - a.orders.length);
-  const kH = "<th>Produk</th><th>Jml</th><th>Order ID</th><th>Tracking ID</th><th>Status</th><th>Stok</th>";
+  const kH = "<th>Produk</th><th>Jml</th><th>Order ID</th><th>Tracking ID</th><th>Pembayaran</th><th>Keterangan</th>";
   const kHtml = kl.slice(0, GLIM.k).map(e => block("k", e.n, `<div style="width:84px;flex:none;display:flex;justify-content:center">${KLOGO[e.n] ? ckurir(e.n, 30, "80px") : cbadge(e.n)}</div><div class="gn">${esc(e.n)}<small>${fmt.format(e.qty)} item, ${rp(e.sales)}</small></div><div class="gc">${fmt.format(e.orders.length)}<small> pesanan</small></div>`,
-    e.orders.map(o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${sdb(o)}</tr>`), kH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
+    e.orders.map(o => `<tr data-oid="${esc(o.id)}"><td class="l">${prodCell(o)}</td><td>${fmt.format(o.qty)}</td><td>${esc(o.id.slice(-8))}</td><td>${esc(o.track || "-")}</td>${sdb(o)}<td class="ket"><input type="text" data-ket data-id="${esc(o.id)}" value="${esc((MARK[o.id] || {}).ket || "")}" placeholder="isi keterangan"></td></tr>`), kH)).join("") || '<div class="empty">Tidak ada pesanan pada filter ini.</div>';
   el.innerHTML = `<div class="pn" style="grid-column:span 12"><h3>Pengelompokan Pesanan <em>ketuk untuk membuka daftar pesanannya</em></h3><div class="chips" style="margin:0">${chips}</div></div>` +
     `<div class="pn s6"><h3>Daftar Pesanan per Produk <em>${fmt.format(pl.length)} produk</em></h3>${pHtml}${pl.length > GLIM.p ? `<button type="button" class="more" data-gmore="p">Tampilkan 12 produk lagi</button>` : ""}</div>` +
     `<div class="pn s6"><h3>Daftar Pesanan per Kurir <em>${fmt.format(kl.length)} kurir</em></h3>${kHtml}${kl.length > GLIM.k ? `<button type="button" class="more" data-gmore="k">Tampilkan 12 kurir lagi</button>` : ""}</div>`;
@@ -992,19 +995,22 @@ const skKey = n => String(n || "").split(/\s+-\s+|,|\s\|\s/)[0].trim();
 function renderStok() {
   const el = $("sk_tb"); if (!el) return;
   const P = new Map();
-  pfRecs().forEach(r => { if (!r.p || r.s === "Dibatalkan") return; const e = P.get(r.p) || { p: r.p, bq: 0, bn: 0, oq: 0, os: 0 }; e.bq += +r.q || 0; e.bn += +r.n || 0; P.set(r.p, e); });
+  pfRecs().forEach(r => { if (!r.p || r.s === "Dibatalkan") return; const e = P.get(r.p) || { p: r.p, bq: 0, bn: 0, oq: 0, os: 0, fq: 0 }; e.bq += +r.q || 0; e.bn += +r.n || 0; P.set(r.p, e); });
   const seen = new Set(), OM = []; odRows().forEach(r => { const o = odFind(r.id); if (o && !seen.has(o.id)) { seen.add(o.id); OM.push(o); } });
-  OM.forEach(o => { if (o.status === "Dibatalkan") return; (o.items || []).forEach(it => { const e = P.get(skKey(it.name)); if (!e) return; e.oq += it.qty || 0; e.os += it.sales != null ? it.sales : (o.items.length === 1 ? (o.amount || 0) : 0); }); });
+  const FN = new Map(); if (ADMIN && FIN && FIN.dr) finRows().forEach(f => FN.set(f.id, (FN.get(f.id) || 0) + (+f.net || 0)));
+  OM.forEach(o => { if (o.status === "Dibatalkan") return; const its = o.items || [], tot = its.reduce((a, it) => a + (it.sales || 0), 0), fin = FN.get(o.id);
+    its.forEach(it => { const e = P.get(skKey(it.name)); if (!e) return; e.oq += it.qty || 0;
+      if (fin !== undefined) { e.fq += it.qty || 0; e.os += tot ? fin * (it.sales || 0) / tot : fin / its.length; } }); });
   const L = [...P.values()].sort((a, b) => a.p.localeCompare(b.p, "id"));
   if (!L.length) { el.innerHTML = '<div class="empty">Belum ada data pembelian. Isi dulu di menu Pembelian, lalu sisa stok muncul di sini.</div>'; return; }
-  const calc = e => { const beli = e.bq ? e.bn / e.bq : 0, jual = e.oq ? e.os / e.oq : 0, mu = e.oq && e.bq ? jual - beli : 0; return { sisa: e.bq - e.oq, beli, jual, mu, mp: jual ? mu / jual * 100 : 0, tm: mu * e.oq }; };
+  const calc = e => { const beli = e.bq ? e.bn / e.bq : 0, jual = e.fq ? e.os / e.fq : 0, mu = e.fq && e.bq ? jual - beli : 0; return { sisa: e.bq - e.oq, beli, jual, mu, mp: jual ? mu / jual * 100 : 0, tm: e.fq && e.bq ? e.os - beli * e.fq : 0 }; };
   const sg = (n, f) => `<span class="${n < 0 ? "neg" : n > 0 ? "pos" : ""}">${f(n)}</span>`;
-  const row = (name, e, c, no) => `<tr><td>${no}</td><td class="l">${name}</td><td>${fmt.format(e.bq)}</td><td>${fmt.format(e.oq)}</td><td>${sg(c.sisa, v => fmt.format(v))}</td><td>${e.bq ? rp(c.beli) : "-"}</td><td>${e.oq ? rp(c.jual) : "-"}</td><td>${e.oq && e.bq ? sg(c.mu, rpn) : "-"}</td><td>${e.oq && e.bq ? sg(c.mp, v => v.toFixed(1).replace(".", ",") + "%") : "-"}</td><td>${e.oq && e.bq ? sg(c.tm, rpn) : "-"}</td></tr>`;
-  const T = { bq: 0, bn: 0, oq: 0, os: 0 }, tm = { v: 0 }; L.forEach(e => { T.bq += e.bq; T.bn += e.bn; T.oq += e.oq; T.os += e.os; if (e.oq && e.bq) tm.v += calc(e).tm; });
-  const ct = calc(T); ct.tm = tm.v; ct.mu = T.oq && T.bq ? ct.jual - ct.beli : 0; ct.mp = ct.jual ? ct.mu / ct.jual * 100 : 0;
+  const row = (name, e, c, no) => `<tr><td>${no}</td><td class="l">${name}</td><td>${fmt.format(e.bq)}</td><td>${fmt.format(e.oq)}</td><td>${sg(c.sisa, v => fmt.format(v))}</td><td>${e.bq ? rp(c.beli) : "-"}</td><td>${e.fq ? rp(c.jual) : "-"}</td><td>${e.fq && e.bq ? sg(c.mu, rpn) : "-"}</td><td>${e.fq && e.bq ? sg(c.mp, v => v.toFixed(1).replace(".", ",") + "%") : "-"}</td><td>${e.fq && e.bq ? sg(c.tm, rpn) : "-"}</td></tr>`;
+  const T = { bq: 0, bn: 0, oq: 0, os: 0, fq: 0 }, tm = { v: 0 }, TB = { bn: 0, bq: 0 }; L.forEach(e => { T.bq += e.bq; T.bn += e.bn; T.oq += e.oq; T.os += e.os; T.fq += e.fq; if (e.fq && e.bq) { tm.v += calc(e).tm; TB.bn += e.bn / e.bq * e.fq; TB.bq += e.fq; } });
+  const ct = calc(T); ct.tm = tm.v; ct.mu = T.fq && TB.bq ? ct.jual - TB.bn / TB.bq : 0; ct.mp = ct.jual ? ct.mu / ct.jual * 100 : 0;
   el.innerHTML = `<table class="tb"><thead><tr><th>No</th><th>Produk</th><th>Pembelian</th><th>Orderan</th><th>Sisa Stok</th><th>Rata-rata Beli</th><th>Rata-rata Jual</th><th>Margin / Unit</th><th>Margin %</th><th>Total Margin</th></tr></thead><tbody>` +
     L.map((e, i) => row(`<div class="pfc">${pfThumb(e.p, 40)}<span>${esc(e.p)}</span></div>`, e, calc(e), i + 1)).join("") +
-    `</tbody><tfoot><tr><td></td><td class="l">TOTAL</td><td>${fmt.format(T.bq)}</td><td>${fmt.format(T.oq)}</td><td>${sg(ct.sisa, v => fmt.format(v))}</td><td>${T.bq ? rp(ct.beli) : "-"}</td><td>${T.oq ? rp(ct.jual) : "-"}</td><td>${sg(ct.mu, rpn)}</td><td>${sg(ct.mp, v => v.toFixed(1).replace(".", ",") + "%")}</td><td>${sg(ct.tm, rpn)}</td></tr></tfoot></table>`;
+    `</tbody><tfoot><tr><td></td><td class="l">TOTAL</td><td>${fmt.format(T.bq)}</td><td>${fmt.format(T.oq)}</td><td>${sg(ct.sisa, v => fmt.format(v))}</td><td>${T.bq ? rp(ct.beli) : "-"}</td><td>${T.fq ? rp(ct.jual) : "-"}</td><td>${T.fq ? sg(ct.mu, rpn) : "-"}</td><td>${T.fq ? sg(ct.mp, v => v.toFixed(1).replace(".", ",") + "%") : "-"}</td><td>${T.fq ? sg(ct.tm, rpn) : "-"}</td></tr></tfoot></table>`;
 }
 function renderAll() { renderStok(); renderOrderan(); renderProduk(); renderDash(); renderList(); renderGroups(); renderKLogos(); renderImgs(); renderFin(); if (SHEET) renderSheet(); }
 function show(n) {
@@ -1017,6 +1023,7 @@ for (let i = 1; i <= 7; i++) $("t" + i).onclick = () => show(i);
 $("per").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) { PERIOD = b.dataset.p; LIMIT = 40; renderAll(); } });
 $("trend").addEventListener("click", e => { const b = e.target.closest("[data-mo]"); if (b) { MONTH = b.dataset.mo; renderDash(); } });
 $("v1").addEventListener("click", e => {
+  if (e.target.closest("[data-ket]")) return;
   const sd = e.target.closest("[data-sd]"); if (sd) { const m = MARK[sd.dataset.id] = MARK[sd.dataset.id] || {}; m.st = m.st === sd.dataset.sd ? "" : sd.dataset.sd; m.kt = Date.now(); saveMarks(); renderAll(); return; }
   const o = e.target.closest("[data-oid]"); if (o) { openOrder(o.dataset.oid); return; }
   const c = e.target.closest("[data-courier]"); if (c) { openSheet("bw", { courier: c.dataset.courier === "Belum ditentukan" ? "Tidak diketahui" : c.dataset.courier }); return; }
@@ -1036,6 +1043,7 @@ $("sheet").addEventListener("click", e => {
   m.kt = Date.now(); saveMarks(); renderSheet();
 });
 $("sheet").addEventListener("change", e => { const s = e.target.closest("select[data-sf]"); if (s) { SF[s.dataset.sf] = s.value; SLIM = 30; renderSheet(); } });
+$("v1").addEventListener("input", e => { if (!e.target.matches("[data-ket]")) return; const id = e.target.dataset.id; const m = MARK[id] = MARK[id] || {}; m.ket = e.target.value; m.kt = Date.now(); saveMarks(); });
 $("sheet").addEventListener("input", e => { if (!e.target.matches("[data-kn]")) return; const id = e.target.closest(".oc").dataset.id; MARK[id] = Object.assign(MARK[id] || {}, { kn: e.target.value }); saveMarks(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && SHEET) closeSheet(); });
 $("chips").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if (b) { FILTER = b.dataset.f; LIMIT = 40; renderList(); } });
