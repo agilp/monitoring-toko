@@ -454,6 +454,10 @@ td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:nor
 .rsdh{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 8px 20px -8px rgba(10,20,50,.45)}.rsdh .ic2{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.22);display:grid;place-items:center;flex-shrink:0}.rsdh .tx{flex:1;min-width:150px}.rsdh .tx b{display:block;font-size:15px}.rsdh .tx small{display:block;opacity:.9;font-size:12px;margin-top:2px;line-height:1.35}.rsdh .vv{font-size:24px;font-weight:800}
 .rsw{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#b91c1c,#ef4444);color:#fff;border-radius:16px;padding:12px 16px;margin-bottom:10px;box-shadow:0 8px 18px -8px rgba(185,28,28,.6);animation:rswp 2s ease-in-out infinite}.rsw .wi{flex:none;width:34px;height:34px;border-radius:50%;background:#fff;color:#b91c1c;font-weight:900;font-size:20px;display:grid;place-items:center}.rsw b{display:block;font-size:15px}.rsw small{display:block;font-size:12px;opacity:.92;margin-top:1px}@keyframes rswp{50%{box-shadow:0 0 0 5px rgba(239,68,68,.28)}}
 .rst{border-spacing:0 9px!important}.rst td{background:#fff!important;border-top:1px solid #e6edf8;border-bottom:1px solid #e6edf8;padding:12px 10px!important;transition:background .15s}.rst td:first-child{border-left:6px solid var(--rc,#2563eb);border-radius:16px 0 0 16px!important}.rst td:last-child{border-right:1px solid #e6edf8;border-radius:0 16px 16px 0!important}.rst tr.rsr{box-shadow:0 6px 16px -10px rgba(18,50,111,.5)}.rst .rsr:hover td{background:#f3f7ff!important}.rst .rsr{transition:transform .15s}.rst .rsr:hover{transform:translateY(-2px)}.rst .nm{font-size:14.5px}.rst .nm:after{content:" ›  rincian";color:var(--rc,#2563eb);font-size:11px;font-weight:700}.rst td.br div{height:12px!important;border-radius:99px!important;background:#eef2fa!important;overflow:hidden}.rst td.br div i{display:block;height:100%;border-radius:99px;background-image:linear-gradient(90deg,rgba(255,255,255,.35),transparent)!important;background-color:var(--rc)}.rst td.vl{font-size:16.5px!important;font-weight:800;white-space:nowrap}
+.cbx{position:relative;flex:1;min-width:0}.cbx input{width:100%;padding-right:30px!important;box-sizing:border-box}.cbc{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--mute);pointer-events:none;font-size:13px}
+.cbl{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;background:#fff;border:1.5px solid var(--line);border-radius:12px;box-shadow:0 14px 30px -10px rgba(10,20,50,.45);max-height:260px;overflow:auto;padding:4px}
+.cbl.hide{display:none}.cbl div{padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--ink);line-height:1.3}.cbl div:hover,.cbl div.hi{background:#eaf1ff}.cbl div.sel{font-weight:800;color:var(--navy)}.cbl div.nm0{color:var(--mute);cursor:default}.cbl mark{background:#fff0a8;color:inherit;border-radius:3px;padding:0 1px}
+.odup{border-color:#dc2626!important;background:#fff1f1!important}.dpb{display:block;width:max-content;max-width:100%;margin:4px 0 0;background:#dc2626;color:#fff;font-size:10.5px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap}
 .shk{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin:10px 0}
 .shk>div{position:relative;overflow:hidden;color:#fff;border-radius:16px;padding:12px 13px;cursor:pointer}
 .shk>div:after{content:"";position:absolute;right:-16px;top:-16px;width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.17)}
@@ -515,7 +519,7 @@ td.nw{white-space:nowrap!important;word-break:normal!important;overflow-wrap:nor
  <div id="v5" class="hide"><div class="sec">Pembelian</div>
  <div class="card prf"><h3 id="pfh">Tambah Catatan Produk</h3>
   <div class="pfg">
-   <label>Produk<div class="pfp"><span id="pf_im"></span><select id="pf_p"></select></div></label>
+   <label>Produk<div class="pfp"><span id="pf_im"></span><div class="cbx"><input type="text" id="pf_ps" placeholder="Pilih atau cari produk (ketik kata)…" autocomplete="off"><span class="cbc" id="pf_pc">▾</span><div class="cbl hide" id="pf_pl"></div></div><select id="pf_p" style="display:none"></select></div></label>
    <label>Tanggal<input type="date" id="pf_d"></label>
    <label>Bulan<input type="text" id="pf_b" readonly placeholder="otomatis"></label>
    <label>Jumlah<input type="number" id="pf_q" min="0" inputmode="numeric" placeholder="0"></label>
@@ -1007,10 +1011,28 @@ function pfOpts(sel, list, first, cur) { sel.innerHTML = (first ? `<option value
 const pfGet = k => { const v = $("pf_" + k).value; return v === "__new" ? $("pf_" + k + "2").value.trim() : v; };
 function pfSet(k, v) { const sel = $("pf_" + k); v = v || ""; if (v && ![...sel.options].some(o => o.value === v)) { const op = document.createElement("option"); op.value = op.textContent = v; sel.insertBefore(op, sel.lastElementChild); } sel.value = v; $("pf_" + k + "2").value = ""; $("pf_" + k + "2").classList.add("hide"); }
 const tkImg = t => IMG["__toko:" + t];
+var pfpSync = () => { const s = $("pf_p"), i = $("pf_ps"); if (s && i && document.activeElement !== i) i.value = s.value || ""; };
+(function () {
+  const inp = $("pf_ps"), lst = $("pf_pl"), sel = $("pf_p"); if (!inp) return; let hi = -1;
+  const toks = q => q.toLowerCase().split(/\s+/).filter(Boolean);
+  const hl = (t, ks) => { let h = esc(t); ks.forEach(k => { h = h.replace(new RegExp("(" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")(?![^<]*>)", "ig"), "<mark>$1</mark>"); }); return h; };
+  const draw = (filter) => { const ks = filter ? toks(inp.value) : [], cur = sel.value; const opts = [...sel.options].filter(o => o.value && o.value !== "__new" && ks.every(k => o.value.toLowerCase().includes(k)));
+    lst.innerHTML = opts.length ? opts.map((o, i) => `<div data-v="${esc(o.value)}" class="${o.value === cur ? "sel" : ""}">${hl(o.value, ks)}</div>`).join("") : '<div class="nm0">Produk tidak ditemukan</div>'; hi = -1; };
+  const open = f => { draw(f); lst.classList.remove("hide"); };
+  const close = () => { lst.classList.add("hide"); pfpSync(); };
+  const pick = v => { sel.value = v; sel.dispatchEvent(new Event("change", { bubbles: true })); inp.value = v; lst.classList.add("hide"); inp.blur(); };
+  inp.addEventListener("focus", () => { inp.select(); open(false); });
+  inp.addEventListener("click", () => { if (lst.classList.contains("hide")) { inp.select(); open(false); } });
+  inp.addEventListener("input", () => open(true));
+  inp.addEventListener("blur", () => setTimeout(close, 150));
+  lst.addEventListener("mousedown", e => { e.preventDefault(); const d = e.target.closest("[data-v]"); if (d) pick(d.dataset.v); });
+  inp.addEventListener("keydown", e => { const it = [...lst.querySelectorAll("[data-v]")]; if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (lst.classList.contains("hide")) open(false); hi = Math.max(0, Math.min(it.length - 1, hi + (e.key === "ArrowDown" ? 1 : -1))); it.forEach((x, i) => x.classList.toggle("hi", i === hi)); if (it[hi]) it[hi].scrollIntoView({ block: "nearest" }); } else if (e.key === "Enter") { e.preventDefault(); const t = it[hi >= 0 ? hi : 0]; if (t) pick(t.dataset.v); } else if (e.key === "Escape") { close(); inp.blur(); } });
+  sel.addEventListener("change", pfpSync);
+})();
 function renderProduk() {
   if (!$("pf_p")) return;
   const recs = pfRecs(), prods = pfProducts();
-  const cur = $("pf_p").value; pfOpts($("pf_p"), prods, "Pilih produk", cur); if (!$("pf_im").innerHTML) $("pf_im").innerHTML = pfThumb(cur, 52);
+  const cur = $("pf_p").value; pfOpts($("pf_p"), prods, "Pilih produk", cur); if (!$("pf_im").innerHTML) $("pf_im").innerHTML = pfThumb(cur, 52); pfpSync();
   const uniq = k => [...new Set(recs.map(r => r[k]).filter(Boolean))];
   ["a", "t"].forEach(k => { const sel = $("pf_" + k), cv = sel.value; const l = uniq(k).sort((x, y) => x.localeCompare(y, "id")); if (cv && cv !== "__new" && !l.includes(cv)) l.push(cv);
     sel.innerHTML = `<option value="">${k === "a" ? "Pilih akun" : "Pilih toko"}</option>` + l.map(x => `<option value="${esc(x)}"${x === cv ? " selected" : ""}>${esc(x)}</option>`).join("") + `<option value="__new"${cv === "__new" ? " selected" : ""}>+ Tambah baru…</option>`; });
@@ -1028,11 +1050,11 @@ function renderProduk() {
   $("pf_rh").innerHTML = grp(r => r.d || "", e => e.k ? pfD(e.k) : "-", "Tanggal");
   $("pf_rt").innerHTML = grp(r => r.t || "", e => e.k ? (tkImg(e.k) ? `<span class="pft2" style="width:34px;height:34px;vertical-align:middle;margin-right:8px"><img src="${tkImg(e.k)}" alt=""></span>` : "") + esc(e.k) : "Tanpa toko", "Toko", (a, b) => !a.k - !b.k || a.k.localeCompare(b.k, "id"));
 }
-function pfClear() { PFEDIT = null; setTimeout(() => $("pf_im") && ($("pf_im").innerHTML = pfThumb("", 52)), 0); ["pf_p", "pf_d", "pf_b", "pf_q", "pf_n", "pf_o", "pf_r"].forEach(i => $(i).value = ""); pfSet("a", ""); pfSet("t", ""); $("pf_s").value = "Diproses"; $("pfh").textContent = "Tambah Catatan Produk"; $("pf_save").textContent = "Simpan"; $("pf_cancel").classList.add("hide"); }
+function pfClear() { PFEDIT = null; setTimeout(() => { $("pf_im") && ($("pf_im").innerHTML = pfThumb("", 52)); pfpSync(); }, 0); ["pf_p", "pf_d", "pf_b", "pf_q", "pf_n", "pf_o", "pf_r"].forEach(i => $(i).value = ""); pfSet("a", ""); pfSet("t", ""); $("pf_s").value = "Diproses"; $("pfh").textContent = "Tambah Catatan Produk"; $("pf_save").textContent = "Simpan"; $("pf_cancel").classList.add("hide"); }
 function pfFromOrder() {
   const o = ORD.find(x => x.id === $("pf_o").value.trim()); if (!o) return false;
   const n = pfName(o); if (![...$("pf_p").options].some(op => op.value === n)) { const op = document.createElement("option"); op.value = op.textContent = n; $("pf_p").appendChild(op); }
-  $("pf_p").value = n; $("pf_im").innerHTML = pfThumb(n, 52); $("pf_d").value = pfIso(o.created); $("pf_b").value = pfBulan($("pf_d").value); $("pf_q").value = o.qty || ""; $("pf_n").value = Math.round(o.amount || o.sales || 0) || "";
+  $("pf_p").value = n; pfpSync(); $("pf_im").innerHTML = pfThumb(n, 52); $("pf_d").value = pfIso(o.created); $("pf_b").value = pfBulan($("pf_d").value); $("pf_q").value = o.qty || ""; $("pf_n").value = Math.round(o.amount || o.sales || 0) || "";
   $("pf_s").value = o.status === "Dibatalkan" ? "Dibatalkan" : o.deliv ? "Diterima" : o.shipped ? "Dikirim" : "Diproses"; $("pf_r").value = pfIso(o.deliv); return true;
 }
 if ($("pf_o")) {
@@ -1066,12 +1088,14 @@ function renderOrderan() {
   const ae = document.activeElement; if (ae && ae.closest && ae.closest("#od_tb") && ae.tagName === "INPUT") return;
   const FM = new Map(); if (ADMIN && FIN && FIN.dr) FIN.dr.forEach(r => { const e = FM.get(r[0]) || { n: 0, set: 0, ref: false }; e.n++; e.set += num(r[5]); if (/pengembalian/i.test(r[1])) e.ref = true; FM.set(r[0], e); });
   const finCell = o => { if (!ADMIN) return ""; if (!FIN) return '<td><span class="stb">Belum ada Excel keuangan</span></td>'; const e = FM.get(o.id); return e ? `<td>${e.ref ? '<span class="stb no">Pengembalian dana</span><div class="odn" style="color:var(--mute)">' + rpn(e.set) + '</div>' : '<b style="color:var(--ok)">' + rpn(e.set) + '</b>'}</td>` : '<td><span class="stb">Belum masuk laporan</span></td>'; };
+  const DK = r => { const o = odFind(r.id); return o ? o.id : String(r.id || "").trim(); }, DC = new Map(), DR = new Map(); rows.forEach((r, i) => { const k = DK(r); if (!k) return; DC.set(k, (DC.get(k) || 0) + 1); (DR.get(k) || DR.set(k, []).get(k)).push(i + 1); });
+  const nDup = [...DC.values()].filter(c => c > 1).length; $("od_cnt").textContent = rows.length ? rows.length + " baris" + (nDup ? ", " + nDup + " ID double" : "") : "";
   const th = ["No", "ID Orderan", "Produk", "Jml", "Nilai", "Dibuat", "Kurir", "Tracking ID", "Status"].concat(ADMIN ? ["Status Keuangan"] : []).concat([""]);
   $("od_tb").innerHTML = `<table class="tb"><thead><tr>${th.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>` + (rows.length ? rows.map((r, i) => {
     const o = odFind(r.id), st = o ? (MARK[o.id] || {}).st : "";
     const cells = o ? `<td class="l">${o.items.map(it => `<div class="pfc" style="margin:2px 0">${pfThumb(skKey(it.name), 40)}<span>${esc(it.name)}${o.items.length > 1 ? ` <b>x${fmt.format(it.qty || 0)}</b>` : ""}</span></div>`).join("")}</td><td>${fmt.format(o.qty)}</td><td>${rp(o.amount || o.sales || 0)}</td><td>${esc(dstr(o.created))}</td><td>${ckurir(o.courier, 24, "70px")}</td><td>${esc(o.track || "-")}</td><td>${esc(o.sub || o.status)}</td>${finCell(o)}`
       : `<td colspan="${ADMIN ? 8 : 7}" style="text-align:left;color:var(--mute)">${r.id ? '<span class="odn">ID tidak ditemukan di data Excel</span>' : "Isi ID Orderan di kolom sebelah kiri"}</td>`;
-    return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}"></td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="11" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
+    return `<tr><td>${i + 1}</td><td><input type="text" inputmode="numeric" value="${esc(r.id)}" data-od="${esc(r.k)}" placeholder="ketik ID orderan" class="${r.id && !o ? "nf" : ""}${(DC.get(DK(r)) || 0) > 1 ? " odup" : ""}">${(DC.get(DK(r)) || 0) > 1 ? `<div class="dpb">&#9888; ID double ${DC.get(DK(r))}x (baris ${DR.get(DK(r)).join(", ")})</div>` : ""}</td>${cells}<td><button type="button" class="pfx d" data-odd="${esc(r.k)}">Hapus</button></td></tr>`; }).join("") : `<tr><td colspan="11" style="padding:18px;color:var(--mute)">Belum ada baris. Tekan "+ Tambah baris".</td></tr>`) + `</tbody></table>`;
 }
 const odNew = n => { for (let i = 0; i < n; i++) MARK["ord_" + Date.now().toString(36) + i + Math.random().toString(36).slice(2, 5)] = { row: { id: "", ts: Date.now() + i } }; saveMarks(); renderOrderan(); };
 if ($("od_add")) {
