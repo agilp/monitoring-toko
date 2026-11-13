@@ -1146,7 +1146,9 @@ function resumeData() {
   if (R.src === "fin") FIN.wr.forEach(r => { const t = num(r[3]); if (r[0] === "Withdrawal") { R.wrW.push(r); R.wd += Math.abs(t); const b = r[6] && r[6] !== "/" ? r[6] : "Tidak tercatat"; R.acc.set(b, (R.acc.get(b) || 0) + Math.abs(t)); } else if (t >= 0) { R.cair += t; R.wrE.push(r); } else { R.adj += t; R.wrA.push(r); } });
   if (R.src === "fin") R.ord = finRows().filter(f => f.id && f.net !== 0).map(f => [f.id, f.net, f.tg, f.jt]);
   if (R.src === "fin" && ADMIN) { const d = { ord: R.ord, cair: R.cair, wd: R.wd, adj: R.adj, wrE: R.wrE, wrW: R.wrW, wrA: R.wrA, acc: [...R.acc.entries()] }, js = JSON.stringify(d); if (!MARK.rsm_s || JSON.stringify(MARK.rsm_s.d) !== js) { MARK.rsm_s = { d, ts: Date.now() }; saveMarks(); } }
-  { const ids = new Set(OM.map(o => o.id)); R.ordSel = R.ord.filter(r => ids.has(r[0])); R.cairId = R.ordSel.reduce((a, r) => a + r[1], 0); R.nOM = OM.length; R.nMiss = OM.filter(o => !R.ord.some(r => r[0] === o.id)).length; }
+  { const ids = new Set(OM.map(o => o.id)), fid = [...new Set(R.ord.map(r => String(r[0])))]; R.nExtra = 0;
+    odRows().forEach(r => { const v = String(r.id || "").trim(); if (!v || odFind(v)) return; let m = fid.includes(v) ? v : null; if (!m && v.length >= 6) { const c = fid.filter(x => x.endsWith(v)); if (c.length === 1) m = c[0]; } if (m && !ids.has(m)) { ids.add(m); R.nExtra++; } });
+    R.ordSel = R.ord.filter(r => ids.has(r[0])); R.cairId = R.ordSel.reduce((a, r) => a + r[1], 0); R.nOM = OM.length + R.nExtra; R.nMiss = OM.filter(o => !R.ord.some(r => r[0] === o.id)).length; }
   R.saldo = R.cair + R.adj - R.wd; R.trf = trRecs().reduce((a, r) => a + (+r.n || 0), 0);
   { const base = R.cair + R.adj, wr = base > 0 ? Math.min(1, Math.max(0, R.wd / base)) : 0, tr = R.wd > 0 ? Math.min(1, R.trf / R.wd) : 0; R.wr = wr; R.tr = tr; R.wdId = R.cairId * wr; R.saldoId = R.cairId - R.wdId; R.trfId = R.trf; R.selisih = R.wdId - R.trf; }
   return R;
