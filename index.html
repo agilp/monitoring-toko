@@ -1163,7 +1163,7 @@ function renderResume() {
     ["#e3a600", "truck", "Nilai produk status sedang kirim", `${fmt.format(R.nKirim)} orderan berstatus Sedang transit (dari menu Orderan)`, R.kirim, R.oKirim.map(o => pfName(o))],
     ["#6d4fd8", "pk", "Nilai produk terkirim", `${fmt.format(R.nKirimed)} orderan sudah Terkirim, belum Selesai (dari menu Orderan)`, R.kirimed, R.oTerkirim.map(o => pfName(o))],
     ["#2f8fe8", "ok", "Nilai produk selesai", `${fmt.format(R.nSelesai)} orderan berstatus Selesai (dari menu Orderan)`, R.selesai, R.oSelesai.map(o => pfName(o))],
-    ["#1f7a5c", "wal", "Nilai produk cair di aplikasi", `Penyelesaian pembayaran ${fmt.format(R.ordSel.length)} orderan sesuai ID di menu Orderan (Excel keuangan)${R.ordSel.length ? "" : (() => { const ids = odRows().map(r => String(r.id || "").trim()).filter(Boolean); return `<br><span style="color:#b45309;font-size:12px">Cek: ${fmt.format(ids.length)} ID di Orderan; Excel keuangan terbaca ${fmt.format(R.ord.length)} pesanan bernilai${FIN ? " dari " + fmt.format(FIN.dr.length) + " baris, periode " + esc(FIN.per) : ""}${R.ts ? ", diterbitkan " + new Date(R.ts).toLocaleString("id-ID") : ""}. ${R.ord.length ? "ID Orderan tidak ada di daftar itu." : "Berarti file keuangan yang terbaca kosong/lama."}</span>`; })()}`, na ? null : R.cairId],
+    ["#1f7a5c", "wal", "Nilai produk cair di aplikasi", `Penyelesaian pembayaran ${fmt.format(R.ordSel.length)} orderan sesuai ID di menu Orderan (Excel keuangan)${R.ordSel.length ? "" : (() => { const ids = odRows().map(r => String(r.id || "").trim()).filter(Boolean); return `<br><span style="color:#b45309;font-size:12px">Cek: ${fmt.format(ids.length)} ID di Orderan; Excel keuangan terbaca ${fmt.format(R.ord.length)} pesanan bernilai${FIN ? " dari " + fmt.format(FIN.dr.length) + " baris, periode " + esc(FIN.per) : ""} [versi baca-excel-2]${R.ts ? ", diterbitkan " + new Date(R.ts).toLocaleString("id-ID") : ""}. ${R.ord.length ? "ID Orderan tidak ada di daftar itu." : "Berarti file keuangan yang terbaca kosong/lama."}</span>`; })()}`, na ? null : R.cairId],
     ["#e0702f", "wd", "Nilai produk di withdraw", `Porsi withdraw untuk ${fmt.format(R.ordSel.length)} orderan di menu Orderan (${Math.round(R.wr * 100)}% dari cair sudah ditarik)`, na ? null : R.wdId],
     ["#c4321f", "coin", "Saldo masih di aplikasi", "Nilai cair orderan di menu Orderan yang belum di-withdraw", na ? null : R.saldoId],
     ["#12326f", "bank", "Sudah ditransfer ke bank pusat", `${fmt.format(trRecs().length)} transfer tercatat di input di bawah (semua catatan transfer)`, R.trf]];
@@ -1594,7 +1594,7 @@ const finMsg = (m, bad) => { const el = $("finmsg"); if (!el) return; el.textCon
 $("ffin").addEventListener("change", async e => {
   const f = e.target.files[0]; if (!f) return; finMsg("Membaca file...", false);
   try { const nf = parseFin(XLSX.read(await f.arrayBuffer(), { type: "array" })); FIN = nf; try { localStorage.setItem("toko-fin", JSON.stringify(FIN)); } catch (er) {} lsFlag("toko-fin-d", true);
-    finMsg("Data keuangan dibaca: " + nf.dr.length + " baris detail, periode " + nf.per + ".", false); renderAll(); schedPush("fin");
+    finMsg("Data keuangan dibaca (versi baca-excel-2): " + nf.dr.length + " baris detail, periode " + nf.per + ".", false); renderAll(); schedPush("fin");
   } catch (er) { finMsg("Gagal: " + (er.message || er), true); }
   e.target.value = "";
 });
