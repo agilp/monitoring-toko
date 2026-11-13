@@ -1163,7 +1163,7 @@ function renderResume() {
     ["#e3a600", "truck", "Nilai produk status sedang kirim", `${fmt.format(R.nKirim)} orderan berstatus Sedang transit (dari menu Orderan)`, R.kirim, R.oKirim.map(o => pfName(o))],
     ["#6d4fd8", "pk", "Nilai produk terkirim", `${fmt.format(R.nKirimed)} orderan sudah Terkirim, belum Selesai (dari menu Orderan)`, R.kirimed, R.oTerkirim.map(o => pfName(o))],
     ["#2f8fe8", "ok", "Nilai produk selesai", `${fmt.format(R.nSelesai)} orderan berstatus Selesai (dari menu Orderan)`, R.selesai, R.oSelesai.map(o => pfName(o))],
-    ["#1f7a5c", "wal", "Nilai produk cair di aplikasi", `Penyelesaian pembayaran ${fmt.format(R.ordSel.length)} orderan sesuai ID di menu Orderan (Excel keuangan)${R.ordSel.length ? "" : (() => { const ids = odRows().map(r => String(r.id || "").trim()).filter(Boolean); return `<br><span style="color:#b45309;font-size:12px">Cek: ${fmt.format(ids.length)} ID di Orderan; Excel keuangan terbaca ${fmt.format(R.ord.length)} pesanan bernilai${R.ts ? ", diterbitkan " + new Date(R.ts).toLocaleString("id-ID") : ""}. ${R.ord.length ? "ID Orderan tidak ada di daftar itu." : "Berarti file keuangan yang terbaca kosong/lama."}</span>`; })()}`, na ? null : R.cairId],
+    ["#1f7a5c", "wal", "Nilai produk cair di aplikasi", `Penyelesaian pembayaran ${fmt.format(R.ordSel.length)} orderan sesuai ID di menu Orderan (Excel keuangan)${R.ordSel.length ? "" : (() => { const ids = odRows().map(r => String(r.id || "").trim()).filter(Boolean); return `<br><span style="color:#b45309;font-size:12px">Cek: ${fmt.format(ids.length)} ID di Orderan; Excel keuangan terbaca ${fmt.format(R.ord.length)} pesanan bernilai${FIN ? " dari " + fmt.format(FIN.dr.length) + " baris, periode " + esc(FIN.per) : ""}${R.ts ? ", diterbitkan " + new Date(R.ts).toLocaleString("id-ID") : ""}. ${R.ord.length ? "ID Orderan tidak ada di daftar itu." : "Berarti file keuangan yang terbaca kosong/lama."}</span>`; })()}`, na ? null : R.cairId],
     ["#e0702f", "wd", "Nilai produk di withdraw", `Porsi withdraw untuk ${fmt.format(R.ordSel.length)} orderan di menu Orderan (${Math.round(R.wr * 100)}% dari cair sudah ditarik)`, na ? null : R.wdId],
     ["#c4321f", "coin", "Saldo masih di aplikasi", "Nilai cair orderan di menu Orderan yang belum di-withdraw", na ? null : R.saldoId],
     ["#12326f", "bank", "Sudah ditransfer ke bank pusat", `${fmt.format(trRecs().length)} transfer tercatat di input di bawah (semua catatan transfer)`, R.trf]];
@@ -1268,7 +1268,7 @@ var SHM = (() => {
   $("fshp").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
     try { if (typeof XLSX === "undefined") throw new Error("library Excel belum termuat (butuh internet)");
       const wb = XLSX.read(await f.arrayBuffer(), { type: "array", cellDates: true }), ws = wb.Sheets[wb.SheetNames.includes("orders") ? "orders" : wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: "", raw: false, dateNF: "yyyy-mm-dd hh:mm" }).map(mapRow).filter(r => r.id && r.prod);
+      const rows = XLSX.utils.sheet_to_json(fixRef(ws), { defval: "", raw: false, dateNF: "yyyy-mm-dd hh:mm" }).map(mapRow).filter(r => r.id && r.prod);
       if (!rows.length) throw new Error('tidak ada baris pesanan; pakai file ekspor "Order.all" dari Shopee');
       const mode = $("shpmode").value, r = ingest(rows, mode); persist();
       msg("Data Shopee dibaca: " + rows.length + " baris (" + r.add + " baru" + (mode === "merge" ? ", " + r.upd + " diperbarui" : "") + "). Total " + ROWS.length + " baris.", false); renderAll(); schedPush("shp");
@@ -1363,7 +1363,7 @@ $("list").addEventListener("input", e => {
   if (!e.target.matches("[data-note]")) return;
   const id = e.target.closest(".oc").dataset.id; MARK[id] = Object.assign(MARK[id] || {}, { note: e.target.value }); saveMarks();
 });
-const sheetRows = ws => { const a = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: false }), hd = a[0] || []; return a.slice(1).map(row => { const r = {}; hd.forEach((k, j) => { r[k] = row[j]; }); r.__an = row[39]; return r; }); };
+const sheetRows = ws => { const a = XLSX.utils.sheet_to_json(fixRef(ws), { header: 1, defval: "", raw: false }), hd = a[0] || []; return a.slice(1).map(row => { const r = {}; hd.forEach((k, j) => { r[k] = row[j]; }); r.__an = row[39]; return r; }); };
 $("f").addEventListener("change", async e => {
   $("info").textContent = "Membaca file, mohon tunggu...";
   for (const f of e.target.files) {
@@ -1427,9 +1427,10 @@ $("iq").addEventListener("input", e => { IQ = e.target.value; renderImgs(); });
 try { FIN = JSON.parse(localStorage.getItem("toko-fin") || "null"); } catch (e) {}
 const rpn = n => (n < 0 ? "-" : "") + rp(Math.abs(n));
 const cl = n => n < 0 ? "neg" : "";
+const fixRef = ws => { if (!ws) return ws; let r = -1, c = -1; for (const k in ws) { if (k[0] === "!") continue; const a = XLSX.utils.decode_cell(k); if (a.r > r) r = a.r; if (a.c > c) c = a.c; } if (r >= 0) ws["!ref"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r, c } }); return ws; };
 function parseFin(wb) {
   const S = nm => { const k = wb.SheetNames.find(x => x.trim().toLowerCase() === nm); return k ? wb.Sheets[k] : null; };
-  const A = ws => ws ? XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: false }).map(r => r.map(v => String(v == null ? "" : v).trim())) : [];
+  const A = ws => ws ? XLSX.utils.sheet_to_json(fixRef(ws), { header: 1, defval: "", raw: false }).map(r => r.map(v => String(v == null ? "" : v).trim())) : [];
   const lap = S("laporan"), det = S("detail pesanan");
   if (!lap || !det) throw new Error("Sheet 'Laporan' atau 'Detail pesanan' tidak ditemukan. Pastikan ini Excel income dari TikTok.");
   const meta = {}, rows = [];
