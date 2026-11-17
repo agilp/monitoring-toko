@@ -1375,15 +1375,15 @@ function rkTab(head, rows, foot) { return `<div class="rkw"><table class="rkt2">
 function rkLegX(items) { return `<div class="rkg">` + items.map(i => `<span>${rkDot(i.c)}${esc(i.l)}</span>`).join("") + "</div>"; }
 function renderRekap() {
   const el = $("rk_main"); if (!el) return;
-  const live = ORD.filter(o => o.created && o.status !== "Dibatalkan");
+  const live = ORD.filter(o => o.created && o.created >= Date.UTC(2026, 10, 1) && o.status !== "Dibatalkan");
   if (!live.length) { el.innerHTML = '<div class="card"><p style="margin:0;color:var(--mute)">Belum ada data orderan. Unggah data di menu Input Data.</p></div>'; return; }
   const mk = o => { const d = new Date(o.created); return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0"); };
   const P = new Map(); pfRecs().forEach(r => { if (!r.p || r.s === "Dibatalkan") return; const e = P.get(r.p) || { bq: 0, bn: 0 }; e.bq += +r.q || 0; e.bn += +r.n || 0; P.set(r.p, e); });
   const hpp = it => { const e = P.get(skKey(it.name)); return e && e.bq ? (it.qty || 0) * e.bn / e.bq : 0; };
   const M = new Map(), nop = new Set();
   live.forEach(o => { const k = mk(o), m = M.get(k) || { n: 0, q: 0, s: 0, h: 0, pr: new Map() }; m.n++; m.s += o.sales; o.items.forEach(it => { m.q += it.qty; m.h += hpp(it); const pk = skKey(it.name) || "-"; m.pr.set(pk, (m.pr.get(pk) || 0) + it.sales); if (!P.has(skKey(it.name))) nop.add(skKey(it.name)); }); M.set(k, m); });
-  const ox = oxRecs(); const OX = new Map(); ox.forEach(r => OX.set(r.m, (OX.get(r.m) || 0) + (+r.n || 0)));
-  const allK = [...new Set([...M.keys(), ...OX.keys()])].sort(), yrs = [...new Set(allK.map(k => k.slice(0, 4)))];
+  const ox = oxRecs().filter(r => r.m >= "2026-11"); const OX = new Map(); ox.forEach(r => OX.set(r.m, (OX.get(r.m) || 0) + (+r.n || 0)));
+  const allK = [...new Set([...M.keys(), ...OX.keys()])].filter(k => k >= "2026-11").sort(), yrs = [...new Set(allK.map(k => k.slice(0, 4)))];
   if (RKY !== "all" && !yrs.includes(RKY)) RKY = "all";
   const ks = allK.filter(k => RKY === "all" || k.startsWith(RKY)), G = k => M.get(k) || { n: 0, q: 0, s: 0, h: 0, pr: new Map() };
   const S = ks.map(k => G(k).s), H = ks.map(k => G(k).h), MG = ks.map((k, i) => S[i] - H[i]), BO = ks.map(k => OX.get(k) || 0), MA = ks.map((k, i) => MG[i] - BO[i]);
@@ -1396,7 +1396,7 @@ function renderRekap() {
   const prods = [...pt.entries()].sort((a, b) => b[1] - a[1]), top = prods.slice(0, 6).map(p => p[0]);
   const matrix = `<div class="rkw" style="max-height:420px"><table class="rkt2"><thead><tr><th>Produk</th>${ks.map(k => `<th class="n">${rkML(k)}</th>`).join("")}<th class="n">Total</th></tr></thead><tbody>${prods.map(([p, t], i) => `<tr><td>${i < 6 ? rkDot(RKC[i]) : rkDot(RKC[7])}${esc(p)}</td>${ks.map(k => `<td class="n">${G(k).pr.get(p) ? rkS(G(k).pr.get(p)) : "-"}</td>`).join("")}<td class="n"><b>${rkS(t)}</b></td></tr>`).join("")}</tbody><tfoot><tr><td>Total</td>${S.map(v => `<td class="n">${rkS(v)}</td>`).join("")}<td class="n">${rkS(tS)}</td></tr></tfoot></table></div>`;
   const mNow = new Date().toISOString().slice(0, 7);
-  el.innerHTML = `<div class="mchips"><button type="button" data-ry="all" class="${RKY === "all" ? "on" : ""}">Semua tahun</button>` + yrs.map(y => `<button type="button" data-ry="${y}" class="${RKY == y ? "on" : ""}">${y}</button>`).join("") + `</div>
+  el.innerHTML = (yrs.length < 2 ? "" : `<div class="mchips"><button type="button" data-ry="all" class="${RKY === "all" ? "on" : ""}">Semua tahun</button>` + yrs.map(y => `<button type="button" data-ry="${y}" class="${RKY == y ? "on" : ""}">${y}</button>`).join("") + `</div>`) + `
   <div class="rkk3">${kp("Penjualan", rp(tS), fmt.format(sum(ks.map(k => G(k).n))) + " pesanan", "#2563eb")}${kp("Margin kotor", rp(tMG), rkPct(tMG, tS) + " dari penjualan", "#1f9d7a")}${kp("Biaya operasional", rp(tBO), rkPct(tBO, tS) + " dari penjualan", "#e0702f")}${kp("Margin akhir", rp(tMA), rkPct(tMA, tS) + " dari penjualan", tMA < 0 ? "#e0503f" : "#8b5cf6")}</div>
   <div class="rkgrid">
   ${card(1, "Penjualan per bulan", "nilai penjualan tanpa pesanan batal", rkTab(["Bulan", "Pesanan", "Pcs", "Penjualan", "Rata-rata"], ks.map(k => [rkML(k), fmt.format(G(k).n), fmt.format(G(k).q), rp(G(k).s), rp(G(k).n ? G(k).s / G(k).n : 0)]), ["Total", fmt.format(sum(ks.map(k => G(k).n))), fmt.format(sum(ks.map(k => G(k).q))), rp(tS), ""]))}
